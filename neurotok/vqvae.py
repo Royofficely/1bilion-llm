@@ -17,7 +17,7 @@ class VectorQuantizer(nn.Module):
     
     def forward(self, inputs: torch.Tensor) -> Tuple[torch.Tensor, torch.Tensor, torch.Tensor]:
         input_shape = inputs.shape
-        flat_input = inputs.view(-1, self.embedding_dim)
+        flat_input = inputs.reshape(-1, self.embedding_dim)
         
         distances = (torch.sum(flat_input**2, dim=1, keepdim=True) 
                     + torch.sum(self.embeddings.weight**2, dim=1)
@@ -27,7 +27,7 @@ class VectorQuantizer(nn.Module):
         encodings = torch.zeros(encoding_indices.shape[0], self.num_embeddings, device=inputs.device)
         encodings.scatter_(1, encoding_indices, 1)
         
-        quantized = torch.matmul(encodings, self.embeddings.weight).view(input_shape)
+        quantized = torch.matmul(encodings, self.embeddings.weight).reshape(input_shape)
         
         e_latent_loss = F.mse_loss(quantized.detach(), inputs)
         q_latent_loss = F.mse_loss(quantized, inputs.detach())
@@ -134,14 +134,14 @@ class VQVAE(nn.Module):
     def get_codes(self, x: torch.Tensor) -> torch.Tensor:
         z = self.encoder(x)
         z = z.permute(0, 2, 1)
-        flat_z = z.view(-1, self.vq.embedding_dim)
+        flat_z = z.reshape(-1, self.vq.embedding_dim)
         
         distances = (torch.sum(flat_z**2, dim=1, keepdim=True) 
                     + torch.sum(self.vq.embeddings.weight**2, dim=1)
                     - 2 * torch.matmul(flat_z, self.vq.embeddings.weight.t()))
         
         encoding_indices = torch.argmin(distances, dim=1)
-        return encoding_indices.view(z.shape[0], -1)
+        return encoding_indices.reshape(z.shape[0], -1)
     
     def from_codes(self, codes: torch.Tensor) -> torch.Tensor:
         quantized = self.vq.embeddings(codes)

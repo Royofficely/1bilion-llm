@@ -1,0 +1,8 @@
+__pycache__/
+*.pyc
+*.pt
+checkpoints/
+out/
+.DS_Store
+*.log
+.claude/

@@ -1,0 +1,38 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "title": "Post V1 Schema",
+  "required": ["title", "author", "date", "content", "tags"],
+  "properties": {
+    "title": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 300
+    },
+    "author": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 100
+    },
+    "date": {
+      "type": "string",
+      "format": "date"
+    },
+    "content": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 10000
+    },
+    "tags": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 50
+      },
+      "minItems": 0,
+      "maxItems": 20
+    }
+  },
+  "additionalProperties": false
+}

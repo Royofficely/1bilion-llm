@@ -1,0 +1,32 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "title": "Product V1 Schema",
+  "required": ["name", "price", "currency", "in_stock", "url"],
+  "properties": {
+    "name": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 200
+    },
+    "price": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 1000000
+    },
+    "currency": {
+      "type": "string",
+      "enum": ["USD", "EUR", "GBP", "JPY", "CNY"],
+      "default": "USD"
+    },
+    "in_stock": {
+      "type": "boolean"
+    },
+    "url": {
+      "type": "string",
+      "format": "uri",
+      "pattern": "^https?://"
+    }
+  },
+  "additionalProperties": false
+}

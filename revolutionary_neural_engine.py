@@ -458,8 +458,13 @@ class ConsciousnessToTextGenerator(nn.Module):
     def generate_natural_text(self, consciousness, emotions, input_context=""):
         """Generate natural text purely from consciousness patterns - NO hardcoded conditions"""
         with torch.no_grad():
-            # Analyze consciousness patterns
-            consciousness_features = self.consciousness_analyzer(consciousness)
+            # Add input context encoding for dynamic responses
+            input_hash = hash(input_context) % 1000  # Simple input variation
+            context_noise = torch.randn(consciousness.size(), device=consciousness.device) * 0.1
+            consciousness_varied = consciousness + context_noise * (input_hash / 1000.0)
+            
+            # Analyze consciousness patterns with input variation
+            consciousness_features = self.consciousness_analyzer(consciousness_varied)
             
             # Adapt emotional tone (handle all tensor shapes)
             if emotions.dim() == 2 and emotions.size(-1) == 7:
@@ -475,6 +480,10 @@ class ConsciousnessToTextGenerator(nn.Module):
                 if emotions.numel() >= 7:
                     emotions_fixed[0, :min(7, emotions.numel())] = emotions.flatten()[:7]
                 emotion_features = self.emotion_adapter(emotions_fixed)
+            
+            # Add emotional variation based on input
+            emotion_variation = torch.randn_like(emotion_features) * 0.05
+            emotion_features = emotion_features + emotion_variation
             
             # Ensure matching batch dimensions for concatenation
             if consciousness_features.size(0) != emotion_features.size(0):
@@ -517,31 +526,51 @@ class ConsciousnessToTextGenerator(nn.Module):
             
             # Step 4: Generate words for complete sentence using neural prediction
             words = []
+            
+            # Add randomness for variety
+            random_seed = abs(input_hash + int(torch.sum(consciousness).item() * 1000)) % 10000
+            torch.manual_seed(random_seed)
+            
             for pos in range(max_length):
                 # Get neural word probabilities for this position
-                word_logits = self.word_predictor(lstm_output[0, pos])
+                position_features = lstm_output[0, pos] + torch.randn_like(lstm_output[0, pos]) * 0.02
+                word_logits = self.word_predictor(position_features)
                 
-                # Apply temperature sampling based on consciousness complexity
-                temperature = max(0.5, 0.8 + complexity * 0.3)
+                # Apply dynamic temperature based on consciousness complexity and position
+                base_temp = 0.7 + complexity * 0.4 + (pos * 0.05)  # Increase temp as sentence progresses
+                emotion_temp_modifier = torch.sum(emotions).item() * 0.1
+                temperature = max(0.4, base_temp + emotion_temp_modifier)
+                
                 scaled_logits = word_logits / temperature
                 
-                # Use top-k sampling for natural variety
-                top_k = min(15, len(self.vocabulary))
-                top_values, top_indices = torch.topk(scaled_logits, top_k)
-                top_probs = F.softmax(top_values, dim=-1)
+                # Use top-p (nucleus) sampling for better variety
+                sorted_logits, sorted_indices = torch.sort(scaled_logits, descending=True)
+                cumulative_probs = torch.cumsum(F.softmax(sorted_logits, dim=-1), dim=-1)
                 
-                # Sample word
-                sampled_idx = torch.multinomial(top_probs, 1).item()
-                word_idx = top_indices[sampled_idx].item()
+                # Remove tokens with cumulative probability above the threshold (nucleus)
+                nucleus_threshold = 0.8 + (pos * 0.02)  # Expand choices as sentence progresses
+                sorted_indices_to_remove = cumulative_probs > nucleus_threshold
+                sorted_indices_to_remove[1:] = sorted_indices_to_remove[:-1].clone()
+                sorted_indices_to_remove[0] = 0
+                
+                indices_to_remove = sorted_indices_to_remove.scatter(0, sorted_indices, sorted_indices_to_remove)
+                scaled_logits[indices_to_remove] = float('-inf')
+                
+                # Sample from nucleus
+                probs = F.softmax(scaled_logits, dim=-1)
+                word_idx = torch.multinomial(probs, 1).item()
                 
                 if word_idx in self.vocabulary:
                     word = self.vocabulary[word_idx]
-                    # Build natural sentence structure
-                    if word not in ["<pad>", "<start>", "<end>", " "]:
+                    # Build natural sentence structure with anti-repetition
+                    if (word not in ["<pad>", "<start>", "<end>", " "] and 
+                        (len(words) == 0 or word != words[-1])):  # Prevent immediate repetition
                         words.append(word)
                         
                 # Stop if we have enough words for a sentence
-                if len(words) >= 6 and word_idx in [200, 201, 202]:  # punctuation
+                if len(words) >= 5 and word_idx in [200, 201, 202]:  # punctuation
+                    break
+                elif len(words) >= 8:  # Max sentence length
                     break
             
             # Neural punctuation placement

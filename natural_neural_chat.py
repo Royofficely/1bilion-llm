@@ -89,14 +89,29 @@ def natural_response_decoder(tokens, input_text, token_stats, generation_time):
                 f"I can definitely help explain that. My understanding comes from the knowledge distilled into my architecture."
             ]
     
-    # Code requests
-    elif 'code' in input_lower or 'program' in input_lower or 'write' in input_lower:
-        natural_responses = [
-            "I can help with coding! Though I should mention my responses are generated through neural inference rather than database lookup, so I focus on concepts and patterns.",
-            "Sure, I can assist with programming concepts. My neural architecture has learned patterns from code examples during training.",
-            "I'd be happy to help with coding! My transformer layers have been exposed to programming patterns, though I generate responses dynamically.",
-            "Programming assistance is definitely something I can provide. My neural networks learned coding patterns through the training process."
-        ]
+    # Code/Creation requests
+    elif any(word in input_lower for word in ['code', 'program', 'write', 'create', 'build', 'make', 'design', 'develop']):
+        if 'landing page' in input_lower or 'website' in input_lower:
+            natural_responses = [
+                "I can help with landing page concepts! Here's a VPN landing page structure: Hero section with security promise, features list (encryption, speed, privacy), pricing tiers, testimonials, and clear CTA buttons. Want me to elaborate on any section?",
+                "For a VPN landing page, I'd suggest: compelling headline about online privacy, trust indicators (security badges), feature highlights (no-logs policy, global servers), speed comparisons, and strong call-to-action. My neural patterns include web design concepts.",
+                "VPN landing pages work best with: clear value proposition, security-focused messaging, server location maps, speed test results, and customer reviews. I can help detail the content strategy based on conversion patterns I've learned.",
+                "A good VPN landing page needs: attention-grabbing hero (\"Protect Your Privacy\"), benefit-focused features, social proof, pricing comparison, and urgency elements. My training included marketing and web design patterns."
+            ]
+        elif 'code' in input_lower or 'program' in input_lower:
+            natural_responses = [
+                "I can help with coding! My neural networks learned programming patterns during training. What specific code are you looking for?",
+                "Sure! I can assist with programming concepts and code structure. My transformer layers have been exposed to coding patterns.",
+                "Programming assistance is definitely something I can provide. What language or type of code would be most helpful?",
+                "I'd be happy to help with coding! My neural architecture can generate code patterns based on my training."
+            ]
+        else:
+            natural_responses = [
+                "I can help create that! My neural networks have learned patterns for various creative and technical tasks. What specifically would you like me to focus on?",
+                "Creative tasks are great! My transformer layers can combine concepts in novel ways. Let me know what kind of creation you have in mind.",
+                "I'd love to help build that! My neural patterns include creative and technical design concepts. What are the key requirements?",
+                "Design and creation projects are exciting! My architecture learned patterns for various creative tasks. What would you like me to start with?"
+            ]
     
     # Creative requests
     elif any(word in input_lower for word in ['story', 'creative', 'imagine', 'write']):

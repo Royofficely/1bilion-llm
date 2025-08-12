@@ -52,7 +52,7 @@ class FractalTokenizer(nn.Module):
     def text_to_fractal(self, text):
         """Convert text to fractal consciousness patterns"""
         # Initial consciousness seed
-        consciousness_seed = torch.zeros(1, self.consciousness_dim)
+        consciousness_seed = torch.zeros(1, self.consciousness_dim, device=self.fractal_transformers[0].weight.device)
         
         # Inject text energy into consciousness
         for i, char in enumerate(text[:100]):
@@ -193,7 +193,7 @@ class MemoryCrystallization(nn.Module):
         resonance_weights = self.resonance_detector(consciousness)
         
         # Extract relevant memories
-        activated_memories = torch.zeros(1, self.memory_depth)
+        activated_memories = torch.zeros(1, self.memory_depth, device=consciousness.device)
         for i, weight in enumerate(resonance_weights[0]):
             if weight > 0.1:  # Significant resonance
                 crystal_memory = torch.mean(self.memory_crystals[i], dim=0)

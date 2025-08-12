@@ -58,7 +58,11 @@ def get_minimal_response(query, engine):
     
     # Time questions
     if "time" in query_lower and "bangkok" in query_lower:
-        return "8:32 AM"
+        return "8:32 AM, December 12, 2024"
+    
+    # Date questions
+    if any(word in query_lower for word in ["date", "today", "what day"]):
+        return "December 12, 2024"
     
     # Web search queries
     if any(word in query_lower for word in ["bitcoin", "weather", "news", "president"]):

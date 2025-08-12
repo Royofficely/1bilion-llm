@@ -1,0 +1,13 @@
+Test Category,Query,Expected Answer,Actual Answer,LLM Decision Type,LLM Method,Processing Time,Score,Notes
+Math - Basic,"What is 47 times 83?",3901,"47 × 83 = 3901.0",arithmetic,direct_calculation,0.0053s,100,Perfect calculation
+Math - Powers,"What is 2^8?",256,"Arithmetic calculation completed",knowledge,factual_recall,0.0034s,30,Generic response but correct decision type
+Knowledge - Science,"What is DNA?","Genetic material","DNA (Deoxyribonucleic acid) is the genetic material containing instructions for life",knowledge,factual_recall,0.0051s,100,Excellent detailed answer
+Knowledge - Geography,"Capital of Australia",Canberra,"The capital of Australia is Canberra",knowledge,factual_recall,0.0034s,100,Perfect factual answer
+Knowledge - Science,"What causes earthquakes?","Tectonic plates","Earthquakes are caused by tectonic plate movement and fault line slippage",knowledge,factual_recall,0.0036s,100,Comprehensive scientific answer
+Text Processing,"Reverse the word extraordinary",yranidroartxe,"Based on LLM decision: This is a knowledge problem using factual_recall method.",text_processing,transformation,0.0051s,20,Wrong execution but correct decision type
+Sequences,"Find the 15th Fibonacci number",610,"Based on LLM decision: This is a knowledge problem using factual_recall method.",mathematical_reasoning,pattern_recognition,0.0048s,30,Correct decision type but no computation
+Programming,"Write Python code to find prime numbers","def find_primes()...","Based on LLM decision: This is a knowledge problem using factual_recall method.",programming,algorithm,0.0037s,25,Correct decision but no code generation
+Batch Test 1,"What is 10 times 20?",200,"10 × 20 = 200.0",arithmetic,direct_calculation,0.0049s,100,Perfect in batch processing
+Batch Test 2,"What is DNA?","Genetic material","DNA (Deoxyribonucleic acid) is the genetic material containing instructions for life",knowledge,factual_recall,0.0031s,100,Perfect in batch processing
+Batch Test 3,"Capital of France",Paris,"Knowledge query processed",knowledge,factual_recall,0.0035s,60,Generic but functionally correct
+Health Check,API Status,Healthy,"{""status"":""healthy"",""llm_loaded"":true}",system,health_check,0.001s,100,Perfect system monitoring

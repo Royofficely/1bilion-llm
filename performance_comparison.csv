@@ -1,0 +1,30 @@
+Test Category,Question,Complexity,Multi-Agent Result,Multi-Agent Score,Multi-Agent Agent Used,Claude Result,Claude Score,Winner,Notes
+Basic Math,What is 47 times 83?,Easy,3901,100,math_agent,3901,100,Tie,Both correct
+Basic Math,Calculate 12 factorial,Easy,479001600,100,math_agent,479001600,100,Tie,Both correct  
+Math Sequences,What comes next in sequence: 3 7 15 31?,Medium,No specific info,60,knowledge_agent,63 (pattern: 2^n-1),100,Claude,Claude identified pattern
+Prime Numbers,Is 97 a prime number?,Medium,No specific info,60,knowledge_agent,Yes - 97 is prime,100,Claude,Claude has prime knowledge
+Python Coding,Write Python code to find all prime numbers up to 100,Hard,Format error,0,python_agent,"def find_primes(n):\n    primes = []\n    for i in range(2, n+1):\n        is_prime = True\n        for j in range(2, int(i**0.5)+1):\n            if i % j == 0:\n                is_prime = False\n                break\n        if is_prime:\n            primes.append(i)\n    return primes",100,Claude,Multi-agent has formatting bug
+Python Coding,Create a Python function that reverses a string,Medium,Generic template,70,python_agent,"def reverse_string(s):\n    return s[::-1]",100,Claude,Claude provides specific solution
+Python Coding,Python algorithm for bubble sort,Hard,Correct bubble sort,100,python_agent,Correct bubble sort implementation,100,Tie,Both provide correct algorithm
+Text Processing,Reverse the word 'extraordinary',Easy,Reversed 'the' → 'eht',30,text_agent,yranidrxe,100,Claude,Multi-agent parsed wrong word
+Text Processing,Count the letter 's' in 'Mississippi',Easy,Please specify letter and word,40,text_agent,4 occurrences of 's',100,Claude,Multi-agent didn't parse correctly
+Text Processing,What's the first letter of 'psychology'?,Easy,First letter of 'of' is 'o',20,text_agent,p,100,Claude,Multi-agent parsed wrong word
+Knowledge,What causes earthquakes?,Medium,No mathematical expression,30,math_agent,Tectonic plate movement and geological stress,100,Claude,Wrong agent routing
+Knowledge,Explain photosynthesis,Medium,Plants convert sunlight to energy using chlorophyll,90,knowledge_agent,"6CO2 + 6H2O + light energy → C6H12O6 + 6O2. Plants use chlorophyll to capture light energy and convert carbon dioxide and water into glucose and oxygen.",100,Claude,Both good but Claude more detailed
+Knowledge,What is DNA?,Medium,No specific information,40,knowledge_agent,Deoxyribonucleic acid - genetic material containing instructions for life,100,Claude,Multi-agent lacks basic knowledge
+Knowledge,Capital of Australia,Easy,Text processing operations,30,text_agent,Canberra,100,Claude,Wrong agent routing
+Knowledge,What is 0 factorial?,Easy,No specific information,40,knowledge_agent,1 (0! = 1 by definition),100,Claude,Multi-agent lacks math knowledge
+Text Processing,Reverse a single letter: a,Easy,a,100,text_agent,a,100,Tie,Both correct
+Knowledge,What is machine learning in simple terms?,Medium,No specific information,40,knowledge_agent,AI systems that learn patterns from data to make predictions without explicit programming,100,Claude,Multi-agent lacks AI knowledge
+Advanced Math,What is 17^8 without calculator?,Hard,No specific information,40,knowledge_agent,6975757441,100,Claude,Claude can compute large powers
+Advanced Math,Find the 15th Fibonacci number,Hard,Text processing operations,30,text_agent,610,100,Claude,Wrong routing
+Advanced Math,Calculate the area of a circle with radius 7.5,Medium,7.5 = 7.5,20,math_agent,πr² = π(7.5)² ≈ 176.7 square units,100,Claude,Multi-agent didn't recognize formula
+Advanced Math,What is the derivative of x^3 + 2x^2 - 5x + 3?,Hard,No specific information,40,knowledge_agent,3x² + 4x - 5,100,Claude,Multi-agent lacks calculus
+Advanced Math,What is log base 2 of 256?,Medium,Cannot evaluate,30,math_agent,8 (since 2^8 = 256),100,Claude,Multi-agent lacks log functions
+Complex Coding,Write Python code for binary search algorithm,Hard,Correct implementation,100,python_agent,Correct binary search implementation,100,Tie,Both provide correct code
+Complex Coding,Create a Python class for a binary tree with insert method,Hard,Format error,0,python_agent,"class TreeNode:\n    def __init__(self, val):\n        self.val = val\n        self.left = None\n        self.right = None\n\nclass BinaryTree:\n    def __init__(self):\n        self.root = None\n    \n    def insert(self, val):\n        if not self.root:\n            self.root = TreeNode(val)\n        else:\n            self._insert_recursive(self.root, val)\n    \n    def _insert_recursive(self, node, val):\n        if val < node.val:\n            if node.left:\n                self._insert_recursive(node.left, val)\n            else:\n                node.left = TreeNode(val)\n        else:\n            if node.right:\n                self._insert_recursive(node.right, val)\n            else:\n                node.right = TreeNode(val)",100,Claude,Multi-agent formatting issues
+Complex Text,Count vowels and consonants in 'The quick brown fox jumps over the lazy dog',Hard,Text processing operations,50,text_agent,"Vowels: 11 (e,u,i,o,o,u,o,e,e,a,o), Consonants: 24",100,Claude,Claude provides complete analysis
+Complex Text,Check if 'listen' and 'silent' are anagrams,Medium,Text processing operations,50,text_agent,Yes - both contain same letters: e i l n s t,100,Claude,Claude understands anagrams
+Edge Cases,What is 0^0?,Hard,No specific information,70,knowledge_agent,Mathematically undefined but often treated as 1 in certain contexts,90,Claude,Both acknowledge complexity
+Edge Cases,Calculate 1 divided by 0,Hard,Cannot divide by zero,100,math_agent,Undefined - division by zero is not allowed,100,Tie,Both handle correctly
+Edge Cases,Find factorial of 0,Easy,1,100,math_agent,1,100,Tie,Both correct

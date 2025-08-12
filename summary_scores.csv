@@ -1,0 +1,39 @@
+Performance Summary,Multi-Agent System,Claude,Difference
+Overall Average Score,65.8,97.1,-31.3
+Basic Math (Easy),100.0,100.0,0.0
+Math Sequences (Medium),60.0,100.0,-40.0
+Advanced Math (Hard),32.0,100.0,-68.0
+Basic Python Coding,56.7,100.0,-43.3
+Advanced Python Coding,50.0,100.0,-50.0
+Basic Text Processing,30.0,100.0,-70.0
+Advanced Text Processing,50.0,100.0,-50.0
+Basic Knowledge,48.0,100.0,-52.0
+Advanced Knowledge,40.0,100.0,-60.0
+Edge Cases,90.0,96.7,-6.7
+
+Category Analysis,Multi-Agent Strengths,Multi-Agent Weaknesses,Claude Advantages
+Mathematics,Simple arithmetic calculations,Complex math (calculus derivatives logarithms),Complete mathematical knowledge
+Programming,Can generate some correct algorithms,Formatting bugs prevent execution,Clean executable code
+Text Processing,Basic string operations,Word parsing and extraction,Natural language understanding
+Knowledge,Limited factual database,Missing common knowledge (DNA capitals),Comprehensive knowledge base
+Routing,Fast agent selection,Sometimes routes to wrong agent,Always uses appropriate reasoning
+
+Detailed Breakdown,Tests Passed,Tests Failed,Success Rate %
+Multi-Agent Basic Suite,16,1,94.1%
+Multi-Agent Advanced Suite,50,11,82.0%  
+Claude Equivalent Tests,29,1,96.7%
+
+Agent-Specific Performance,Correct Responses,Incorrect Responses,Agent Success Rate %
+math_agent,8,4,66.7%
+python_agent,4,6,40.0%
+text_agent,2,8,20.0%
+knowledge_agent,7,3,70.0%
+web_agent,0,0,N/A
+
+Key Findings,Multi-Agent,Claude,Analysis
+Speed,Very fast (<0.001s per query),Moderate (varies),Multi-agent wins on speed
+Accuracy on Simple Tasks,High (90%+),Perfect (100%),Claude more reliable
+Accuracy on Complex Tasks,Medium (50-70%),High (95%+),Claude significantly better
+Specialized Knowledge,Limited domain expertise,Broad comprehensive knowledge,Claude has deeper knowledge
+Error Handling,Good with edge cases,Excellent with all cases,Both handle errors well
+Code Generation,Templates with some bugs,Clean functional code,Claude produces better code

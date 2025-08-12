@@ -735,11 +735,11 @@ class ConsciousnessToTextGenerator(nn.Module):
 
 
 class WebKnowledge:
-    """SMART HYBRID: SerpAPI + rapid knowledge injection for beating GPT/Claude"""
+    """SMART HYBRID: SerperDev API + rapid knowledge injection for beating GPT/Claude"""
     
-    def __init__(self, serp_api_key="d74df495f2728a80693c4d8dd13143105daa7c12"):
+    def __init__(self, serper_api_key="d74df495f2728a80693c4d8dd13143105daa7c12"):
         self.cache = {}  # Simple cache to avoid repeated API calls
-        self.serp_api_key = serp_api_key
+        self.serper_api_key = serper_api_key
         
         # EXPANDED RAPID KNOWLEDGE - Essential facts for instant responses
         self.knowledge_base = {
@@ -800,12 +800,12 @@ class WebKnowledge:
             })
             print(f"💡 Rapid knowledge injection successful!")
         
-        # Step 2: SerpAPI for real-time data (high-value queries only)
-        if not rapid_result and self.should_use_serp_api(query):
-            serp_result = self.search_serp_api(query)
-            if serp_result:
-                results.extend(serp_result)
-                print(f"🌐 SerpAPI real-time search successful!")
+        # Step 2: SerperDev for real-time data (high-value queries only)
+        if not rapid_result and self.should_use_serper_api(query):
+            serper_result = self.search_serper_api(query)
+            if serper_result:
+                results.extend(serper_result)
+                print(f"🌐 SerperDev real-time search successful!")
         
         # Cache the results
         self.cache[cache_key] = results
@@ -829,9 +829,16 @@ class WebKnowledge:
             if re.search(pattern, query_lower):
                 return answer
         
-        # Time queries (before web search to avoid API costs)
+        # Time queries (only for general time, not location-specific)
         if any(phrase in query_lower for phrase in ['time now', 'current time', 'what time', 'whats the time']):
+            # Skip if location-specific (let SerperDev handle it)
+            if any(location in query_lower for location in ['in ', 'bangkok', 'london', 'tokyo', 'new york', 'paris', 'berlin']):
+                return None  # Let web search handle location-specific time
             return "I need a valid API key for real-time information. Please specify a location for timezone help."
+        
+        # Bitcoin price queries - let web search handle current prices
+        if any(phrase in query_lower for phrase in ['bitcoin price', 'btc price', 'crypto price']) and 'today' in query_lower:
+            return None  # Let SerperDev handle current prices
         
         # Smart keyword matching for other topics
         for keyword, knowledge in self.knowledge_base.items():
@@ -840,60 +847,78 @@ class WebKnowledge:
         
         return None
     
-    def should_use_serp_api(self, query):
-        """REVOLUTIONARY: Use SerpAPI for ALL queries that rapid knowledge can't handle"""
-        # If rapid knowledge injection fails, use SerpAPI for ANY question
-        return True  # Always use SerpAPI as backup for unlimited knowledge
+    def should_use_serper_api(self, query):
+        """REVOLUTIONARY: Use SerperDev for ALL queries that rapid knowledge can't handle"""
+        # If rapid knowledge injection fails, use SerperDev for ANY question
+        return True  # Always use SerperDev as backup for unlimited knowledge
     
-    def search_serp_api(self, query):
-        """Real-time web search using SerpAPI - for high-value queries only"""
+    def search_serper_api(self, query):
+        """Real-time web search using SerperDev API - for high-value queries only"""
         try:
-            url = "https://serpapi.com/search.json"
-            params = {
+            url = "https://google.serper.dev/search"
+            headers = {
+                'X-API-KEY': self.serper_api_key,
+                'Content-Type': 'application/json'
+            }
+            data = {
                 'q': query,
-                'api_key': self.serp_api_key,
-                'engine': 'google',
-                'num': '3'  # Limit results to control cost
+                'num': 3  # Limit results to control cost
             }
             
-            response = requests.get(url, params=params, timeout=10)
+            response = requests.post(url, headers=headers, json=data, timeout=10)
             if response.status_code == 200:
                 data = response.json()
                 
                 # Check for API errors
                 if 'error' in data:
-                    print(f"⚠️  SerpAPI error: {data['error']}")
+                    print(f"⚠️  SerperDev error: {data['error']}")
                     return self.get_fallback_knowledge(query)
                 
                 results = []
                 
                 # Extract organic results
-                if 'organic_results' in data:
-                    for result in data['organic_results'][:2]:  # Limit to 2 for cost control
+                if 'organic' in data:
+                    for result in data['organic'][:2]:  # Limit to 2 for cost control
                         if result.get('snippet'):
                             results.append({
-                                'type': 'serp_organic',
+                                'type': 'serper_organic',
                                 'text': result['snippet'],
                                 'source': result.get('link', 'Web')
                             })
                 
                 # Extract featured snippet (most valuable)
-                if 'featured_snippet' in data:
-                    snippet = data['featured_snippet']
-                    if snippet.get('snippet'):
-                        results.insert(0, {  # Put featured snippet first
-                            'type': 'featured_snippet',
-                            'text': snippet['snippet'],
-                            'source': snippet.get('link', 'Featured')
+                if 'answerBox' in data:
+                    answer_box = data['answerBox']
+                    if answer_box.get('answer'):
+                        results.insert(0, {  # Put answer box first
+                            'type': 'answer_box',
+                            'text': answer_box['answer'],
+                            'source': answer_box.get('link', 'Featured')
+                        })
+                    elif answer_box.get('snippet'):
+                        results.insert(0, {
+                            'type': 'answer_box',
+                            'text': answer_box['snippet'],
+                            'source': answer_box.get('link', 'Featured')
+                        })
+                
+                # Extract knowledge graph info
+                if 'knowledgeGraph' in data:
+                    kg = data['knowledgeGraph']
+                    if kg.get('description'):
+                        results.insert(0, {
+                            'type': 'knowledge_graph',
+                            'text': kg['description'],
+                            'source': 'Knowledge Graph'
                         })
                 
                 return results
             else:
-                print(f"⚠️  SerpAPI HTTP error: {response.status_code}")
+                print(f"⚠️  SerperDev HTTP error: {response.status_code}")
                 return self.get_fallback_knowledge(query)
                 
         except Exception as e:
-            print(f"⚠️  SerpAPI search failed: {str(e)[:50]}")
+            print(f"⚠️  SerperDev search failed: {str(e)[:50]}")
             return self.get_fallback_knowledge(query)
             
         return []

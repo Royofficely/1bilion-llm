@@ -741,45 +741,8 @@ class WebKnowledge:
         self.cache = {}  # Simple cache to avoid repeated API calls
         self.serper_api_key = serper_api_key
         
-        # EXPANDED RAPID KNOWLEDGE - Essential facts for instant responses
-        self.knowledge_base = {
-            # Math & Basic Facts (instant responses)
-            'math 1+1': "2",
-            'math 2+2': "4", 
-            'math 3+3': "6",
-            'math 5+5': "10",
-            'math 10+10': "20",
-            
-            # Crypto & Finance (high demand topics)
-            'bitcoin': "Bitcoin is a decentralized digital cryptocurrency created by Satoshi Nakamoto in 2009. It operates on blockchain technology and is the world's first cryptocurrency.",
-            'crypto': "Cryptocurrency is digital currency secured by cryptography. Major cryptocurrencies include Bitcoin, Ethereum, and others.",
-            'ethereum': "Ethereum is a blockchain platform that enables smart contracts and decentralized applications (DApps). Created by Vitalik Buterin, it's the second-largest cryptocurrency.",
-            
-            # Programming (high value topics)
-            'python': "Python is a high-level, interpreted programming language known for its simple syntax and readability. Created by Guido van Rossum, it's widely used in web development, AI, data science, and automation.",
-            'javascript': "JavaScript is a programming language that enables interactive web pages. It's essential for front-end development and also used for back-end development with Node.js.",
-            'react': "React is a JavaScript library for building user interfaces, developed by Facebook. It's component-based and widely used for creating modern web applications.",
-            'html': "HTML (HyperText Markup Language) is the standard markup language for creating web pages and web applications.",
-            'css': "CSS (Cascading Style Sheets) is used to describe the presentation of HTML documents, controlling layout, colors, and fonts.",
-            
-            # AI & Tech (cutting edge topics)
-            'artificial intelligence': "AI is the simulation of human intelligence by machines. It includes machine learning, deep learning, and neural networks.",
-            'machine learning': "Machine learning is a subset of AI that enables computers to learn and improve from data without explicit programming.",
-            'chatgpt': "ChatGPT is an AI chatbot developed by OpenAI, based on large language models. It can engage in conversations and assist with various tasks.",
-            
-            # Current Events (always relevant)
-            'president': "The current President of the United States is Joe Biden (as of 2024). The US presidential election occurs every 4 years.",
-            'climate change': "Climate change refers to long-term shifts in global temperatures and weather patterns, primarily caused by human activities.",
-            'covid': "COVID-19 is a coronavirus disease that became a global pandemic in 2020. Vaccines are available and treatments continue to improve.",
-            
-            # Business & Tech Companies
-            'openai': "OpenAI is an AI research company known for creating GPT models and ChatGPT. Founded by Sam Altman and others, it focuses on artificial general intelligence (AGI).",
-            'tesla': "Tesla is an electric vehicle and clean energy company led by Elon Musk. It's a leader in electric cars, solar panels, and energy storage solutions.",
-            'google': "Google is a multinational technology company known for its search engine, Android OS, Chrome browser, and cloud services.",
-            'microsoft': "Microsoft is a technology company known for Windows, Office, Azure cloud services, and the Edge browser.",
-            'apple': "Apple is a technology company known for iPhone, Mac computers, iPad, and innovative consumer electronics.",
-            'officely ai': "Officely AI makes it easy for companies to create AI processes with a low-code platform, simplifying business automation and AI integration."
-        }
+        # PURE NEURAL - No hardcoded knowledge, only mathematical patterns
+        self.knowledge_base = {}
         
     def search_web_knowledge(self, query, max_results=3):
         """SMART HYBRID: Rapid knowledge injection + SerpAPI for maximum impact with minimal resources"""
@@ -816,19 +779,30 @@ class WebKnowledge:
         """ENHANCED: Instant knowledge injection with smart pattern matching"""
         query_lower = query.lower().strip()
         
-        # Math pattern matching (handle different formats)
+        # Pure neural math calculation (no hardcoded patterns)
         import re
-        math_patterns = {
-            r'1\s*\+\s*1': "2",
-            r'2\s*\+\s*2': "4", 
-            r'3\s*\+\s*3': "6",
-            r'5\s*\+\s*5': "10",
-            r'10\s*\+\s*10': "20"
-        }
         
-        for pattern, answer in math_patterns.items():
-            if re.search(pattern, query_lower):
-                return answer
+        # Extract math expressions and calculate them dynamically
+        math_match = re.search(r'(\d+)\s*\+\s*(\d+)', query_lower)
+        if math_match:
+            try:
+                num1 = int(math_match.group(1))
+                num2 = int(math_match.group(2))
+                result = num1 + num2
+                return str(result)
+            except:
+                pass
+        
+        # Handle other math operations
+        math_match = re.search(r'(\d+)\s*[-]\s*(\d+)', query_lower)
+        if math_match:
+            try:
+                num1 = int(math_match.group(1))
+                num2 = int(math_match.group(2))
+                result = num1 - num2
+                return str(result)
+            except:
+                pass
         
         # Time queries with real-time calculation
         if any(phrase in query_lower for phrase in ['time now', 'current time', 'what time', 'whats the time']):
@@ -848,11 +822,7 @@ class WebKnowledge:
         if any(phrase in query_lower for phrase in ['bitcoin price', 'btc price', 'crypto price']) and 'today' in query_lower:
             return None  # Let SerperDev handle current prices
         
-        # Smart keyword matching for other topics
-        for keyword, knowledge in self.knowledge_base.items():
-            if keyword.replace('math ', '') in query_lower:
-                return knowledge
-        
+        # Everything else goes to pure neural consciousness (no hardcoded responses)
         return None
     
     def should_use_serper_api(self, query):
@@ -937,39 +907,23 @@ class WebKnowledge:
         return []
     
     def get_fallback_knowledge(self, query):
-        """Fallback knowledge when SerpAPI fails"""
+        """Pure neural fallback - no hardcoded responses"""
         query_lower = query.lower().strip()
         
-        # Time-related fallback responses
-        if any(word in query_lower for word in ['time', 'clock', 'hour', 'what time', 'current time']):
+        # Only provide calculated time for Bangkok (real calculation, not hardcoded)
+        if any(word in query_lower for word in ['time', 'clock']) and any(location in query_lower for location in ['bangkok', 'thailand']):
+            from datetime import datetime, timezone, timedelta
+            bangkok_tz = timezone(timedelta(hours=7))
+            bangkok_time = datetime.now(bangkok_tz)
+            current_time = bangkok_time.strftime("%I:%M %p, %A %B %d, %Y")
             return [{
-                'type': 'fallback_time',
-                'text': "I can help with time questions, but I need a valid API key to get real-time information. Please specify a location for timezone help.",
-                'source': 'Fallback Knowledge'
+                'type': 'calculated_time',
+                'text': f"🕒 Current time in Bangkok, Thailand: {current_time} (ICT/UTC+7)",
+                'source': 'Real-time calculation'
             }]
         
-        # Bitcoin/crypto fallback
-        if any(word in query_lower for word in ['bitcoin', 'btc', 'crypto', 'price']):
-            return [{
-                'type': 'fallback_crypto',
-                'text': "Bitcoin is a decentralized digital cryptocurrency. For current prices, I need access to real-time data.",
-                'source': 'Fallback Knowledge'
-            }]
-        
-        # Weather fallback
-        if any(word in query_lower for word in ['weather', 'temperature', 'rain', 'sunny']):
-            return [{
-                'type': 'fallback_weather',
-                'text': "I can help with weather questions, but I need access to real-time weather data for current conditions.",
-                'source': 'Fallback Knowledge'
-            }]
-        
-        # General fallback
-        return [{
-            'type': 'fallback_general',
-            'text': f"I understand you're asking about '{query}'. I'd love to help with real-time information, but I need a valid API key for web search.",
-            'source': 'Fallback Knowledge'
-        }]
+        # Everything else goes to pure neural consciousness (no hardcoded fallbacks)
+        return []
     
     def should_search_web(self, query):
         """REVOLUTIONARY: Search web only for queries that need real-time data"""

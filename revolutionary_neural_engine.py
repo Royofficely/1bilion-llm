@@ -413,13 +413,20 @@ class ConsciousnessToTextGenerator(nn.Module):
             # Analyze consciousness patterns
             consciousness_features = self.consciousness_analyzer(consciousness)
             
-            # Adapt emotional tone (ensure proper dimensions)
-            if emotions.dim() > 1 and emotions.size(1) == 7:
+            # Adapt emotional tone (handle all tensor shapes)
+            if emotions.dim() == 2 and emotions.size(-1) == 7:
+                # Already correct shape [batch, 7]
                 emotion_features = self.emotion_adapter(emotions)
+            elif emotions.dim() == 1 and emotions.size(0) == 7:
+                # Shape [7] - add batch dimension
+                emotions_batched = emotions.unsqueeze(0)
+                emotion_features = self.emotion_adapter(emotions_batched)
             else:
-                # Reshape emotions to [batch_size, 7] if needed
-                emotions_reshaped = emotions.view(-1, 7) if emotions.numel() >= 7 else torch.zeros(1, 7, device=emotions.device)
-                emotion_features = self.emotion_adapter(emotions_reshaped)
+                # Fallback: create proper emotions tensor
+                emotions_fixed = torch.zeros(consciousness_features.size(0), 7, device=emotions.device)
+                if emotions.numel() >= 7:
+                    emotions_fixed[0, :min(7, emotions.numel())] = emotions.flatten()[:7]
+                emotion_features = self.emotion_adapter(emotions_fixed)
             
             # Ensure matching batch dimensions for concatenation
             if consciousness_features.size(0) != emotion_features.size(0):

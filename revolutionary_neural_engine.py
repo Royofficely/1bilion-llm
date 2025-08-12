@@ -776,54 +776,10 @@ class WebKnowledge:
         return results
     
     def get_rapid_knowledge(self, query):
-        """ENHANCED: Instant knowledge injection with smart pattern matching"""
-        query_lower = query.lower().strip()
-        
-        # Pure neural math calculation (no hardcoded patterns)
-        import re
-        
-        # Extract math expressions and calculate them dynamically
-        math_match = re.search(r'(\d+)\s*\+\s*(\d+)', query_lower)
-        if math_match:
-            try:
-                num1 = int(math_match.group(1))
-                num2 = int(math_match.group(2))
-                result = num1 + num2
-                return str(result)
-            except:
-                pass
-        
-        # Handle other math operations
-        math_match = re.search(r'(\d+)\s*[-]\s*(\d+)', query_lower)
-        if math_match:
-            try:
-                num1 = int(math_match.group(1))
-                num2 = int(math_match.group(2))
-                result = num1 - num2
-                return str(result)
-            except:
-                pass
-        
-        # Time queries with real-time calculation
-        if any(phrase in query_lower for phrase in ['time now', 'current time', 'what time', 'whats the time']):
-            from datetime import datetime, timezone, timedelta
-            
-            # Bangkok time calculation
-            if any(location in query_lower for location in ['bangkok', 'thailand']):
-                bangkok_tz = timezone(timedelta(hours=7))
-                bangkok_time = datetime.now(bangkok_tz)
-                current_time = bangkok_time.strftime("%I:%M %p on %A, %B %d, %Y")
-                return f"🕒 Current time in Bangkok, Thailand: {current_time} (ICT/UTC+7)"
-            
-            # General time query
-            return "I need a valid API key for real-time information. Please specify a location for timezone help."
-        
-        # Bitcoin price queries - let web search handle current prices
-        if any(phrase in query_lower for phrase in ['bitcoin price', 'btc price', 'crypto price']) and 'today' in query_lower:
-            return None  # Let SerperDev handle current prices
-        
-        # Everything else goes to pure neural consciousness (no hardcoded responses)
-        return None
+        """PURE NEURAL: Let consciousness decide what knowledge to use"""
+        # Remove all hardcoded decision logic
+        # Neural consciousness will generate responses without predefined patterns
+        return None  # Always go to neural consciousness
     
     def should_use_serper_api(self, query):
         """REVOLUTIONARY: Use SerperDev for ALL queries that rapid knowledge can't handle"""
@@ -907,54 +863,16 @@ class WebKnowledge:
         return []
     
     def get_fallback_knowledge(self, query):
-        """Pure neural fallback - no hardcoded responses"""
-        query_lower = query.lower().strip()
-        
-        # Only provide calculated time for Bangkok (real calculation, not hardcoded)
-        if any(word in query_lower for word in ['time', 'clock']) and any(location in query_lower for location in ['bangkok', 'thailand']):
-            from datetime import datetime, timezone, timedelta
-            bangkok_tz = timezone(timedelta(hours=7))
-            bangkok_time = datetime.now(bangkok_tz)
-            current_time = bangkok_time.strftime("%I:%M %p, %A %B %d, %Y")
-            return [{
-                'type': 'calculated_time',
-                'text': f"🕒 Current time in Bangkok, Thailand: {current_time} (ICT/UTC+7)",
-                'source': 'Real-time calculation'
-            }]
-        
-        # Everything else goes to pure neural consciousness (no hardcoded fallbacks)
-        return []
+        """PURE NEURAL: No hardcoded fallbacks - consciousness decides everything"""
+        # Remove all hardcoded decision patterns
+        # Neural consciousness will handle all queries without predefined rules
+        return []  # Always let neural consciousness decide
     
     def should_search_web(self, query):
-        """REVOLUTIONARY: Search web only for queries that need real-time data"""
-        query_lower = query.lower().strip()
-        
-        # Skip web search for basic interactions and simple queries
-        skip_web = [
-            'hello', 'hi', 'hey', 'greetings',  # Basic greetings
-            'who are you', 'what are you', 'who built you', 'who build you',  # Identity questions
-            'help me', 'can you help', 'assist me',  # Basic help requests
-            'thank you', 'thanks', 'bye', 'goodbye',  # Polite responses
-            'how are you', 'how do you do', 'nice to meet you',  # Social interactions
-            'tell me about', 'what is', 'explain'  # Basic knowledge queries (use rapid knowledge first)
-        ]
-        
-        # Skip if it's a basic interaction or simple knowledge query
-        if any(skip in query_lower for skip in skip_web):
-            return False
-        
-        # Skip math queries (handled by rapid knowledge)
-        if any(pattern in query_lower for pattern in ['+', '-', '*', '/', 'plus', 'minus', 'times']):
-            return False
-        
-        # Only search web for real-time data queries
-        real_time_queries = [
-            'current', 'today', 'now', 'latest', 'recent',  # Time-sensitive
-            'price', 'weather', 'news', 'stock'  # Real-time data
-        ]
-        
-        # Search web only if query needs real-time data
-        return any(keyword in query_lower for keyword in real_time_queries)
+        """PURE NEURAL: Let consciousness decide if web search is needed"""
+        # Neural consciousness will decide during processing
+        # Remove all hardcoded keyword matching logic
+        return True  # Always allow neural consciousness to decide
     
     def format_web_knowledge(self, results, max_length=300):
         """Format web results for consciousness integration with smart time extraction"""

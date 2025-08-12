@@ -1,3 +1,3 @@
 #!/bin/bash
-# Minimal Chat - Only responses, no noise
-git pull origin main && python3 minimal_chat.py
+# Direct Web Chat - Bypass broken neural routing
+git pull origin main && python3 direct_web_chat.py

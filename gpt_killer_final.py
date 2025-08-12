@@ -65,8 +65,24 @@ def get_gpt_killing_response(query):
     if "weather" in query_lower:
         return get_weather()
     
-    # Default response
-    return "I can help with that"
+    # Search web for everything else - give simple answers
+    result = search_web(query)
+    if result:
+        if 'answerBox' in result and 'answer' in result['answerBox']:
+            answer = result['answerBox']['answer']
+            # Keep first sentence only for simple answers
+            if '.' in answer:
+                answer = answer.split('.')[0]
+            return answer[:50]  # Max 50 chars
+        
+        if 'organic' in result and result['organic']:
+            snippet = result['organic'][0].get('snippet', '')
+            # Keep first sentence only
+            if '.' in snippet:
+                snippet = snippet.split('.')[0] 
+            return snippet[:50]  # Max 50 chars
+    
+    return "Search failed"
 
 def search_web(query):
     """Direct web search using working API"""
@@ -109,25 +125,17 @@ def get_bitcoin_price():
     return "Search failed"
 
 def get_bangkok_time():
-    """Get real Bangkok time - NO FALLBACKS"""
-    result = search_web("current time Bangkok Thailand")
+    """Get real Bangkok time - PURE WEB SEARCH ONLY"""
+    result = search_web("what time is it in Bangkok Thailand right now")
     if result:
-        # Look for time in results
-        text = ""
-        if 'answerBox' in result:
-            text += result['answerBox'].get('answer', '') + " " + result['answerBox'].get('snippet', '')
-        if 'organic' in result and result['organic']:
-            text += " " + result['organic'][0].get('snippet', '')
+        # Return simple answer only
+        if 'answerBox' in result and 'answer' in result['answerBox']:
+            answer = result['answerBox']['answer']
+            return answer.split('.')[0][:30]  # First sentence, max 30 chars
         
-        # Extract time
-        time_patterns = [
-            r'\d{1,2}:\d{2}\s*(AM|PM)',
-            r'\d{1,2}:\d{2}',
-        ]
-        for pattern in time_patterns:
-            time_match = re.search(pattern, text)
-            if time_match:
-                return time_match.group(0)
+        if 'organic' in result and result['organic']:
+            snippet = result['organic'][0].get('snippet', '')
+            return snippet.split('.')[0][:30]  # First sentence, max 30 chars
     
     return "Search failed"
 

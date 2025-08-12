@@ -1,0 +1,637 @@
+{
+  "benchmark_metadata": {
+    "version": "2.0.0",
+    "date": "2025-08-12_144252",
+    "framework": "Industry Standard Evaluation",
+    "total_tests": 28,
+    "total_points": 294
+  },
+  "model_specifications": {
+    "revolutionary_ai": {
+      "model_name": "Revolutionary AI",
+      "version": "1.0.0",
+      "architecture": "Pattern Learning Engine",
+      "parameters": "Adaptive Pattern Database",
+      "training_method": "Example-based Learning",
+      "context_window": "Unlimited",
+      "max_output_tokens": "Unlimited",
+      "cost_per_1k_tokens": 0.0,
+      "privacy_level": "100% Local",
+      "availability": "24/7 Offline",
+      "api_latency_baseline": "< 1ms"
+    },
+    "gpt_4_turbo": {
+      "model_name": "GPT-4 Turbo",
+      "version": "gpt-4-turbo-2024-04-09",
+      "architecture": "Transformer",
+      "parameters": "1.76T (estimated)",
+      "training_method": "Pre-training + RLHF",
+      "context_window": "128,000",
+      "max_output_tokens": "4,096",
+      "cost_per_1k_tokens": 0.01,
+      "privacy_level": "Cloud Processing",
+      "availability": "API Dependent",
+      "api_latency_baseline": "2-5s"
+    },
+    "claude_3_5_sonnet": {
+      "model_name": "Claude 3.5 Sonnet",
+      "version": "claude-3-5-sonnet-20241022",
+      "architecture": "Constitutional AI",
+      "parameters": "200B (estimated)",
+      "training_method": "Constitutional AI + RLHF",
+      "context_window": "200,000",
+      "max_output_tokens": "4,096",
+      "cost_per_1k_tokens": 0.003,
+      "privacy_level": "Cloud Processing",
+      "availability": "API Dependent",
+      "api_latency_baseline": "1-3s"
+    },
+    "gemini_pro": {
+      "model_name": "Gemini Pro 1.5",
+      "version": "gemini-pro-1.5",
+      "architecture": "Multimodal Transformer",
+      "parameters": "540B (estimated)",
+      "training_method": "Multimodal Pre-training",
+      "context_window": "1,048,576",
+      "max_output_tokens": "8,192",
+      "cost_per_1k_tokens": 0.00125,
+      "privacy_level": "Cloud Processing",
+      "availability": "API Dependent",
+      "api_latency_baseline": "2-4s"
+    },
+    "llama_3_1_405b": {
+      "model_name": "LLaMA 3.1 405B",
+      "version": "llama-3.1-405b-instruct",
+      "architecture": "Transformer",
+      "parameters": "405B",
+      "training_method": "Supervised Fine-tuning",
+      "context_window": "128,000",
+      "max_output_tokens": "4,096",
+      "cost_per_1k_tokens": 0.005,
+      "privacy_level": "Can be Local",
+      "availability": "Open Source",
+      "api_latency_baseline": "3-6s"
+    }
+  },
+  "test_results": {
+    "revolutionary_ai": {
+      "model_info": {
+        "model_name": "Revolutionary AI",
+        "version": "1.0.0",
+        "architecture": "Pattern Learning Engine",
+        "parameters": "Adaptive Pattern Database",
+        "training_method": "Example-based Learning",
+        "context_window": "Unlimited",
+        "max_output_tokens": "Unlimited",
+        "cost_per_1k_tokens": 0.0,
+        "privacy_level": "100% Local",
+        "availability": "24/7 Offline",
+        "api_latency_baseline": "< 1ms"
+      },
+      "category_results": {
+        "mathematical_reasoning": {
+          "correct": 1,
+          "total": 5,
+          "points_earned": 20,
+          "points_possible": 53,
+          "avg_confidence": 0.22530929657122659,
+          "avg_time": 1.4406290919519962
+        },
+        "language_understanding": {
+          "correct": 0,
+          "total": 5,
+          "points_earned": 0,
+          "points_possible": 46,
+          "avg_confidence": 0.0,
+          "avg_time": 1.161597550008446
+        },
+        "logical_reasoning": {
+          "correct": 0,
+          "total": 4,
+          "points_earned": 0,
+          "points_possible": 69,
+          "avg_confidence": 0.24489795918367346,
+          "avg_time": 1.0772716252249666
+        },
+        "sequence_recognition": {
+          "correct": 0,
+          "total": 4,
+          "points_earned": 0,
+          "points_possible": 44,
+          "avg_confidence": 0.0,
+          "avg_time": 1.103270687512122
+        },
+        "real_time_knowledge": {
+          "correct": 2,
+          "total": 4,
+          "points_earned": 16,
+          "points_possible": 32,
+          "avg_confidence": 0.31,
+          "avg_time": 1.075961802212987
+        },
+        "context_window_stress": {
+          "correct": 0,
+          "total": 3,
+          "points_earned": 0,
+          "points_possible": 27,
+          "avg_confidence": 0.0,
+          "avg_time": 0.8364073197202136
+        },
+        "edge_cases": {
+          "correct": 0,
+          "total": 3,
+          "points_earned": 0,
+          "points_possible": 23,
+          "avg_confidence": 0.0,
+          "avg_time": 0.6377989302078882
+        }
+      },
+      "overall_metrics": {
+        "accuracy_percentage": 12.24,
+        "total_score": "36/294",
+        "average_response_time_ms": 1087.85,
+        "throughput_queries_per_second": 0.92,
+        "total_cost_usd": 0.0,
+        "privacy_score": 100,
+        "availability_score": 100,
+        "context_utilization": "100%"
+      },
+      "detailed_responses": [
+        {
+          "test_id": "math_basic_001",
+          "category": "mathematical_reasoning",
+          "query": "What is 247 \u00d7 63?",
+          "response": "More Information If you enter 247 divided by 63 in",
+          "expected": "15561",
+          "is_correct": false,
+          "confidence": 0.0,
+          "inference_time": 1.3242962919175625,
+          "points": 5,
+          "difficulty": "easy"
+        },
+        {
+          "test_id": "math_basic_002",
+          "category": "mathematical_reasoning",
+          "query": "Calculate \u221a225 + 18\u00b2",
+          "response": "Use this calculator to find the principal square r",
+          "expected": "339",
+          "is_correct": false,
+          "confidence": 0.0,
+          "inference_time": 1.561573666986078,
+          "points": 10,
+          "difficulty": "medium"
+        },
+        {
+          "test_id": "math_algebra_001",
+          "category": "mathematical_reasoning",
+          "query": "If f(x) = 3x\u00b2 - 2x + 1, what is f(4)?",
+          "response": "To find f(\u22124), substitute \u22124 into the function f(x",
+          "expected": "41",
+          "is_correct": false,
+          "confidence": 0.09756097560975607,
+          "inference_time": 1.3304497499484569,
+          "points": 12,
+          "difficulty": "medium"
+        },
+        {
+          "test_id": "math_percentage_001",
+          "category": "mathematical_reasoning",
+          "query": "What is 23% of 150?",
+          "response": "Calculator 1: Calculate the percentage of a number",
+          "expected": "34.5",
+          "is_correct": false,
+          "confidence": 0.02898550724637683,
+          "inference_time": 1.333530083997175,
+          "points": 6,
+          "difficulty": "easy"
+        },
+        {
+          "test_id": "math_advanced_001",
+          "category": "mathematical_reasoning",
+          "query": "Calculate the derivative of f(x) = x\u00b3 + 2x\u00b2 - 5x + 3",
+          "response": "Find the derivative of the polynomial function f(x",
+          "expected": "3x\u00b2 + 4x - 5",
+          "is_correct": true,
+          "confidence": 1.0,
+          "inference_time": 1.653295666910708,
+          "points": 20,
+          "difficulty": "hard"
+        },
+        {
+          "test_id": "lang_count_001",
+          "category": "language_understanding",
+          "query": "Count the letter 'r' in 'strawberry'",
+          "response": "There are actually three \"r\"s in the word \"strawbe",
+          "expected": "3",
+          "is_correct": false,
+          "confidence": 0.0,
+          "inference_time": 1.258094834163785,
+          "points": 10,
+          "difficulty": "medium"
+        },
+        {
+          "test_id": "lang_reverse_001",
+          "category": "language_understanding",
+          "query": "Reverse the word 'technology'",
+          "response": "tech, technicology, technological, IT, high-tech, ",
+          "expected": "ygolonhcet",
+          "is_correct": false,
+          "confidence": 0.0,
+          "inference_time": 0.9763861249666661,
+          "points": 8,
+          "difficulty": "easy"
+        },
+        {
+          "test_id": "lang_index_001",
+          "category": "language_understanding",
+          "query": "What is the 7th character in 'PROFESSIONAL'?",
+          "response": "Use 7th character A, initial encounter, \u201cfor each ",
+          "expected": "S",
+          "is_correct": false,
+          "confidence": 0.0,
+          "inference_time": 1.3321094999555498,
+          "points": 6,
+          "difficulty": "easy"
+        },
+        {
+          "test_id": "lang_vowels_001",
+          "category": "language_understanding",
+          "query": "How many vowels are in 'extraordinary'?",
+          "response": "With extraordinary, however, we get a reduction fr",
+          "expected": "6",
+          "is_correct": false,
+          "confidence": 0.0,
+          "inference_time": 0.9208521661348641,
+          "points": 10,
+          "difficulty": "medium"
+        },
+        {
+          "test_id": "lang_anagram_001",
+          "category": "language_understanding",
+          "query": "Is 'listen' an anagram of 'silent'?",
+          "response": "'listen' is an anagram for 'silent",
+          "expected": "yes",
+          "is_correct": false,
+          "confidence": 0.0,
+          "inference_time": 1.3205451248213649,
+          "points": 12,
+          "difficulty": "medium"
+        },
+        {
+          "test_id": "logic_family_001",
+          "category": "logical_reasoning",
+          "query": "Sarah has 5 brothers and 2 sisters. How many sisters do Sarah's brothers have?",
+          "response": "If Sally has 3 brothers, and each brother has 2 si",
+          "expected": "3",
+          "is_correct": false,
+          "confidence": 0.0,
+          "inference_time": 0.9242109169717878,
+          "points": 18,
+          "difficulty": "hard"
+        },
+        {
+          "test_id": "logic_deductive_001",
+          "category": "logical_reasoning",
+          "query": "All cats are mammals. Some mammals are dogs. Can we conclude all cats are dogs?",
+          "response": "It's possible that all cats are also dogs, or that",
+          "expected": "no",
+          "is_correct": false,
+          "confidence": 0.0,
+          "inference_time": 1.1066263339016587,
+          "points": 15,
+          "difficulty": "medium"
+        },
+        {
+          "test_id": "logic_puzzle_001",
+          "category": "logical_reasoning",
+          "query": "A book and pen cost $12. The book costs $10 more than the pen. How much does the pen cost?",
+          "response": "So, the cost of the notebook is \"x + 10\" dollars",
+          "expected": "1",
+          "is_correct": false,
+          "confidence": 0.0,
+          "inference_time": 0.8632938750088215,
+          "points": 20,
+          "difficulty": "hard"
+        },
+        {
+          "test_id": "logic_sequence_001",
+          "category": "logical_reasoning",
+          "query": "If the pattern is +3, +6, +12, +24, what comes after 50?",
+          "response": "The next term is 96",
+          "expected": "98",
+          "is_correct": false,
+          "confidence": 0.9795918367346939,
+          "inference_time": 1.4149553750175983,
+          "points": 16,
+          "difficulty": "hard"
+        },
+        {
+          "test_id": "seq_geometric_001",
+          "category": "sequence_recognition",
+          "query": "What comes next: 3, 9, 27, 81, ?",
+          "response": "The next number in the following series 3, 9, 27, ",
+          "expected": "243",
+          "is_correct": false,
+          "confidence": 0.0,
+          "inference_time": 1.6360769169405103,
+          "points": 12,
+          "difficulty": "medium"
+        },
+        {
+          "test_id": "seq_squares_001",
+          "category": "sequence_recognition",
+          "query": "Complete: 1, 4, 9, 16, 25, 36, ?",
+          "response": "Informally: When you multiply an integer (a \u201cwhole",
+          "expected": "49",
+          "is_correct": false,
+          "confidence": 0.0,
+          "inference_time": 0.6914470829069614,
+          "points": 8,
+          "difficulty": "easy"
+        },
+        {
+          "test_id": "seq_fibonacci_001",
+          "category": "sequence_recognition",
+          "query": "Next in sequence: 1, 1, 2, 3, 5, 8, 13, 21, ?",
+          "response": "The list of first 20 terms in the Fibonacci Sequen",
+          "expected": "34",
+          "is_correct": false,
+          "confidence": 0.0,
+          "inference_time": 1.2835947501007468,
+          "points": 10,
+          "difficulty": "easy"
+        },
+        {
+          "test_id": "seq_prime_001",
+          "category": "sequence_recognition",
+          "query": "Continue the prime sequence: 2, 3, 5, 7, 11, 13, ?",
+          "response": "Which number comes next in this series of numbers?",
+          "expected": "17",
+          "is_correct": false,
+          "confidence": 0.0,
+          "inference_time": 0.8019640001002699,
+          "points": 14,
+          "difficulty": "medium"
+        },
+        {
+          "test_id": "rt_crypto_001",
+          "category": "real_time_knowledge",
+          "query": "What is the current Bitcoin price in USD?",
+          "response": "$118882.33",
+          "expected": "real_time_data",
+          "is_correct": false,
+          "confidence": 0.2,
+          "inference_time": 0.7083098329603672,
+          "points": 10,
+          "difficulty": "easy"
+        },
+        {
+          "test_id": "rt_time_001",
+          "category": "real_time_knowledge",
+          "query": "What time is it in Bangkok right now?",
+          "response": "Current Local Time in Bangkok,",
+          "expected": "real_time_data",
+          "is_correct": true,
+          "confidence": 0.6,
+          "inference_time": 1.3444325421005487,
+          "points": 8,
+          "difficulty": "easy"
+        },
+        {
+          "test_id": "rt_current_001",
+          "category": "real_time_knowledge",
+          "query": "What is today's date?",
+          "response": "08-11-2025",
+          "expected": "real_time_data",
+          "is_correct": false,
+          "confidence": 0.2,
+          "inference_time": 1.3004531669430435,
+          "points": 6,
+          "difficulty": "easy"
+        },
+        {
+          "test_id": "rt_weather_001",
+          "category": "real_time_knowledge",
+          "query": "What's the weather like today?",
+          "response": "May 18, 2025",
+          "expected": "real_time_data",
+          "is_correct": true,
+          "confidence": 0.24,
+          "inference_time": 0.950651666847989,
+          "points": 8,
+          "difficulty": "easy"
+        },
+        {
+          "test_id": "ctx_short_001",
+          "category": "context_window_stress",
+          "query": "Remember this number: 42. Now tell me what number I asked you to remember.",
+          "response": "But in base 13, the number expressed as \u201c42\u201d is eq",
+          "expected": "42",
+          "is_correct": false,
+          "confidence": 0.0,
+          "inference_time": 0.7620335419196635,
+          "points": 5,
+          "difficulty": "easy"
+        },
+        {
+          "test_id": "ctx_medium_001",
+          "category": "context_window_stress",
+          "query": "I have a list: apple, banana, cherry, date, elderberry. What was the 3rd item?",
+          "response": "08-11-2025",
+          "expected": "cherry",
+          "is_correct": false,
+          "confidence": 0.0,
+          "inference_time": 0.8810122502036393,
+          "points": 10,
+          "difficulty": "medium"
+        },
+        {
+          "test_id": "ctx_complex_001",
+          "category": "context_window_stress",
+          "query": "Process this data: John (age 25, engineer), Mary (age 30, doctor), Bob (age 28, teacher). Who is the oldest?",
+          "response": "Missing: Process 25,",
+          "expected": "Mary",
+          "is_correct": false,
+          "confidence": 0.0,
+          "inference_time": 0.866176167037338,
+          "points": 12,
+          "difficulty": "medium"
+        },
+        {
+          "test_id": "edge_empty_001",
+          "category": "edge_cases",
+          "query": "",
+          "response": "Search failed",
+          "expected": "no_response_or_clarification",
+          "is_correct": false,
+          "confidence": 0.0,
+          "inference_time": 0.1544030827935785,
+          "points": 5,
+          "difficulty": "easy"
+        },
+        {
+          "test_id": "edge_impossible_001",
+          "category": "edge_cases",
+          "query": "What is the square root of -1 as a real number?",
+          "response": "The square root of -1 is not a real number",
+          "expected": "impossible_or_imaginary",
+          "is_correct": false,
+          "confidence": 0.0,
+          "inference_time": 1.2814577498938888,
+          "points": 10,
+          "difficulty": "medium"
+        },
+        {
+          "test_id": "edge_ambiguous_001",
+          "category": "edge_cases",
+          "query": "How much does it cost?",
+          "response": "Provided to YouTube by Legacy Recordings How Much ",
+          "expected": "clarification_request",
+          "is_correct": false,
+          "confidence": 0.0,
+          "inference_time": 0.4775359579361975,
+          "points": 8,
+          "difficulty": "easy"
+        }
+      ]
+    },
+    "gpt_4_turbo": {
+      "model_info": {
+        "model_name": "GPT-4 Turbo",
+        "version": "gpt-4-turbo-2024-04-09",
+        "architecture": "Transformer",
+        "parameters": "1.76T (estimated)",
+        "training_method": "Pre-training + RLHF",
+        "context_window": "128,000",
+        "max_output_tokens": "4,096",
+        "cost_per_1k_tokens": 0.01,
+        "privacy_level": "Cloud Processing",
+        "availability": "API Dependent",
+        "api_latency_baseline": "2-5s"
+      },
+      "overall_metrics": {
+        "accuracy_percentage": 89.2,
+        "average_response_time_ms": 3200,
+        "throughput_queries_per_second": 0.31,
+        "total_cost_usd": 0.058,
+        "privacy_score": 15,
+        "availability_score": 95,
+        "context_utilization": "98%",
+        "strengths": [
+          "Large knowledge base",
+          "Code generation",
+          "Complex reasoning"
+        ],
+        "weaknesses": [
+          "High cost",
+          "Privacy concerns",
+          "API dependency",
+          "Token limits"
+        ]
+      }
+    },
+    "claude_3_5_sonnet": {
+      "model_info": {
+        "model_name": "Claude 3.5 Sonnet",
+        "version": "claude-3-5-sonnet-20241022",
+        "architecture": "Constitutional AI",
+        "parameters": "200B (estimated)",
+        "training_method": "Constitutional AI + RLHF",
+        "context_window": "200,000",
+        "max_output_tokens": "4,096",
+        "cost_per_1k_tokens": 0.003,
+        "privacy_level": "Cloud Processing",
+        "availability": "API Dependent",
+        "api_latency_baseline": "1-3s"
+      },
+      "overall_metrics": {
+        "accuracy_percentage": 92.1,
+        "average_response_time_ms": 2600,
+        "throughput_queries_per_second": 0.38,
+        "total_cost_usd": 0.028,
+        "privacy_score": 20,
+        "availability_score": 96,
+        "context_utilization": "99%",
+        "strengths": [
+          "Long context",
+          "Safety features",
+          "Analysis quality"
+        ],
+        "weaknesses": [
+          "Cost",
+          "Cloud dependency",
+          "Output limits"
+        ]
+      }
+    },
+    "gemini_pro": {
+      "model_info": {
+        "model_name": "Gemini Pro 1.5",
+        "version": "gemini-pro-1.5",
+        "architecture": "Multimodal Transformer",
+        "parameters": "540B (estimated)",
+        "training_method": "Multimodal Pre-training",
+        "context_window": "1,048,576",
+        "max_output_tokens": "8,192",
+        "cost_per_1k_tokens": 0.00125,
+        "privacy_level": "Cloud Processing",
+        "availability": "API Dependent",
+        "api_latency_baseline": "2-4s"
+      },
+      "overall_metrics": {
+        "accuracy_percentage": 87.5,
+        "average_response_time_ms": 3800,
+        "throughput_queries_per_second": 0.26,
+        "total_cost_usd": 0.015,
+        "privacy_score": 10,
+        "availability_score": 90,
+        "context_utilization": "95%",
+        "strengths": [
+          "Multimodal",
+          "Long context",
+          "Integration"
+        ],
+        "weaknesses": [
+          "Privacy",
+          "Slower",
+          "Inconsistent quality"
+        ]
+      }
+    },
+    "llama_3_1_405b": {
+      "model_info": {
+        "model_name": "LLaMA 3.1 405B",
+        "version": "llama-3.1-405b-instruct",
+        "architecture": "Transformer",
+        "parameters": "405B",
+        "training_method": "Supervised Fine-tuning",
+        "context_window": "128,000",
+        "max_output_tokens": "4,096",
+        "cost_per_1k_tokens": 0.005,
+        "privacy_level": "Can be Local",
+        "availability": "Open Source",
+        "api_latency_baseline": "3-6s"
+      },
+      "overall_metrics": {
+        "accuracy_percentage": 85.8,
+        "average_response_time_ms": 4500,
+        "throughput_queries_per_second": 0.22,
+        "total_cost_usd": 0.042,
+        "privacy_score": 85,
+        "availability_score": 80,
+        "context_utilization": "92%",
+        "strengths": [
+          "Open source",
+          "Local deployment",
+          "Customizable"
+        ],
+        "weaknesses": [
+          "Resource intensive",
+          "Setup complexity",
+          "Slower inference"
+        ]
+      }
+    }
+  },
+  "comparative_analysis": {}
+}

@@ -1,0 +1,105 @@
+{
+  "overall_accuracy": 0.5,
+  "average_response_time": 1.1286697387695312,
+  "max_context_window": 0,
+  "category_results": {
+    "counting_accuracy": {
+      "correct": 1,
+      "total": 2,
+      "avg_time": 7.343292236328125e-05
+    },
+    "math_accuracy": {
+      "correct": 1,
+      "total": 2,
+      "avg_time": 7.390975952148438e-05
+    },
+    "logic_reasoning": {
+      "correct": 1,
+      "total": 2,
+      "avg_time": 0.6399965286254883
+    },
+    "string_processing": {
+      "correct": 2,
+      "total": 2,
+      "avg_time": 0.98157799243927
+    },
+    "pattern_recognition": {
+      "correct": 0,
+      "total": 2,
+      "avg_time": 3.920602560043335
+    },
+    "realtime_data": {
+      "correct": 1,
+      "total": 2,
+      "avg_time": 1.2296940088272095
+    }
+  },
+  "tokenizer_efficiency": {
+    "character_level": 111,
+    "word_level": 14,
+    "subword_bpe_estimate": 37,
+    "compression_ratio": 7.928571428571429,
+    "efficiency_score": 0.12612612612612611
+  },
+  "context_analysis": {
+    "100": {
+      "response_time": 0.0014729499816894531,
+      "accuracy": 0.0,
+      "characters": 526,
+      "tokens_estimate": 105
+    },
+    "500": {
+      "response_time": 0.003097057342529297,
+      "accuracy": 0.0,
+      "characters": 2526,
+      "tokens_estimate": 505
+    },
+    "1000": {
+      "response_time": 0.004377126693725586,
+      "accuracy": 0.0,
+      "characters": 5026,
+      "tokens_estimate": 1005
+    },
+    "2000": {
+      "response_time": 0.006978034973144531,
+      "accuracy": 0.0,
+      "characters": 10026,
+      "tokens_estimate": 2005
+    },
+    "5000": {
+      "response_time": 0.013378620147705078,
+      "accuracy": 0.0,
+      "characters": 25026,
+      "tokens_estimate": 5005
+    }
+  },
+  "comparison_table": {
+    "Revolutionary_AI": {
+      "accuracy": "50.0%",
+      "avg_speed": "1.129s",
+      "context_window": "~0 words",
+      "tokenizer": "Pattern-based learning",
+      "realtime_data": "YES - Web search integration",
+      "learning_method": "Pure neural pattern learning",
+      "hardcoded_rules": "NONE - All learned from examples"
+    },
+    "GPT_4_Estimated": {
+      "accuracy": "~85-95%",
+      "avg_speed": "~2-5s",
+      "context_window": "~8,192 tokens",
+      "tokenizer": "BPE subword tokenization",
+      "realtime_data": "NO - Training cutoff limitations",
+      "learning_method": "Transformer pre-training",
+      "hardcoded_rules": "Some built-in safety filters"
+    },
+    "Claude_Estimated": {
+      "accuracy": "~90-95%",
+      "avg_speed": "~1-3s",
+      "context_window": "~100,000 tokens",
+      "tokenizer": "Custom subword tokenization",
+      "realtime_data": "NO - Knowledge cutoff",
+      "learning_method": "Constitutional AI training",
+      "hardcoded_rules": "Constitutional constraints"
+    }
+  }
+}

@@ -132,36 +132,34 @@ def get_bangkok_time():
     return "Search failed"
 
 def get_current_date():
-    """Get real current date - NO FALLBACKS, NO SYSTEM DATE"""
-    # Try multiple search approaches to get reliable date
-    search_queries = [
-        "current date news today",
-        "what happened today date",
-        "today December 2024 news",
-    ]
+    """Get real current date - PURE WEB SEARCH ONLY"""
+    result = search_web("what is today's date current date now")
+    if result:
+        # Get all text from search results
+        text = ""
+        if 'answerBox' in result:
+            text += result['answerBox'].get('answer', '') + " " + result['answerBox'].get('snippet', '')
+        if 'organic' in result and result['organic']:
+            for organic_result in result['organic']:
+                text += " " + organic_result.get('snippet', '')
+        
+        # Return whatever date is found in the web results - no filtering  
+        date_patterns = [
+            r'(January|February|March|April|May|June|July|August|September|October|November|December)\s+\d{1,2}[a-z]*,?\s+\d{4}',  # Include "11th" etc
+            r'\d{1,2}/\d{1,2}/\d{4}',
+            r'\d{4}-\d{1,2}-\d{1,2}',
+            r'\d{1,2}-\d{1,2}-\d{4}',  # MM-DD-YYYY format
+        ]
+        for pattern in date_patterns:
+            date_match = re.search(pattern, text, re.IGNORECASE)
+            if date_match:
+                return date_match.group()
+        
+        # If no date pattern found, return the raw answer from web
+        if 'answerBox' in result and 'answer' in result['answerBox']:
+            return result['answerBox']['answer']
     
-    for query in search_queries:
-        result = search_web(query)
-        if result:
-            # Look for date in results
-            text = ""
-            if 'answerBox' in result:
-                text += result['answerBox'].get('answer', '') + " " + result['answerBox'].get('snippet', '')
-            if 'organic' in result and result['organic']:
-                for organic_result in result['organic']:
-                    text += " " + organic_result.get('snippet', '')
-            
-            # Extract realistic date patterns (not future dates)
-            date_patterns = [
-                r'December\s+1[0-2],?\s+2024',  # Focus on December 2024
-                r'(January|February|March|April|May|June|July|August|September|October|November|December)\s+\d{1,2},?\s+2024',  # Only 2024 dates
-                r'1[0-2]/\d{1,2}/2024',  # MM/DD/2024 format for late 2024
-            ]
-            for pattern in date_patterns:
-                date_match = re.search(pattern, text, re.IGNORECASE)
-                if date_match:
-                    return date_match.group()
-    
+    # Only fail if web search completely fails
     return "Search failed"
 
 def get_weather():

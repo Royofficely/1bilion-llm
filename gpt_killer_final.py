@@ -89,7 +89,7 @@ def search_web(query):
         return None
 
 def get_bitcoin_price():
-    """Get real Bitcoin price"""
+    """Get real Bitcoin price - NO FALLBACKS"""
     result = search_web("bitcoin price today USD")
     if result:
         # Try answer box
@@ -106,10 +106,10 @@ def get_bitcoin_price():
             if price_match:
                 return price_match.group()
     
-    return "$119,080" # Fallback
+    return "Search failed"
 
 def get_bangkok_time():
-    """Get real Bangkok time"""
+    """Get real Bangkok time - NO FALLBACKS"""
     result = search_web("current time Bangkok Thailand")
     if result:
         # Look for time in results
@@ -129,31 +129,34 @@ def get_bangkok_time():
             if time_match:
                 return time_match.group(0)
     
-    return "8:32 AM" # Fallback
+    return "Search failed"
 
 def get_current_date():
-    """Get real current date"""
-    result = search_web("today's date current date")
+    """Get real current date - NO FALLBACKS, NO SYSTEM DATE"""
+    result = search_web("what is today's date")
     if result:
         # Look for date in results
         text = ""
         if 'answerBox' in result:
             text += result['answerBox'].get('answer', '') + " " + result['answerBox'].get('snippet', '')
         if 'organic' in result and result['organic']:
-            text += " " + result['organic'][0].get('snippet', '')
+            for organic_result in result['organic']:
+                text += " " + organic_result.get('snippet', '')
         
-        # Extract date
+        # Extract date - more patterns
         date_patterns = [
             r'(January|February|March|April|May|June|July|August|September|October|November|December)\s+\d{1,2},?\s+\d{4}',
             r'\d{1,2}/\d{1,2}/\d{4}',
-            r'December\s+\d{1,2},?\s+\d{4}',
+            r'\d{4}-\d{1,2}-\d{1,2}',
+            r'(Monday|Tuesday|Wednesday|Thursday|Friday|Saturday|Sunday),?\s+(January|February|March|April|May|June|July|August|September|October|November|December)\s+\d{1,2},?\s+\d{4}',
+            r'Today is (.*?\d{4})',
         ]
         for pattern in date_patterns:
-            date_match = re.search(pattern, text)
+            date_match = re.search(pattern, text, re.IGNORECASE)
             if date_match:
-                return date_match.group(0)
+                return date_match.group().replace('Today is ', '')
     
-    return "December 12, 2024" # Fallback
+    return "Search failed"
 
 def get_weather():
     """Get weather info"""

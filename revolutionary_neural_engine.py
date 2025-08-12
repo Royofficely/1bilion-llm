@@ -209,7 +209,10 @@ class MemoryCrystallization(nn.Module):
         # Update memory crystals (learning)
         with torch.no_grad():
             strongest_resonance = torch.argmax(resonance_weights)
-            self.memory_crystals[strongest_resonance, -1] = new_memory[0]
+            # new_memory is [1, 512], but crystal expects [256] for last dimension
+            # We need to compress the memory back to consciousness space
+            compressed_memory = new_memory[0][:self.consciousness_dim]  # Take first 256 elements
+            self.memory_crystals[strongest_resonance, -1] = compressed_memory
             # Shift older memories deeper
             self.memory_crystals[strongest_resonance, 1:] = self.memory_crystals[strongest_resonance, :-1].clone()
         

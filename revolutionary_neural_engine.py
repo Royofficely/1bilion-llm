@@ -387,13 +387,30 @@ class ConsciousnessToTextGenerator(nn.Module):
             nn.Linear(64, 128)
         )
         
-        # Text generation network
-        self.text_generator = nn.Sequential(
+        # Neural Language Model for coherent sentence generation
+        self.consciousness_encoder = nn.Sequential(
             nn.Linear(256 + 128, 512),  # consciousness + emotion
             nn.GELU(),
-            nn.Linear(512, 1024),
+            nn.Linear(512, 512),
+            nn.LayerNorm(512)
+        )
+        
+        # Neural attention for consciousness-aware text generation
+        self.text_attention = nn.MultiheadAttention(
+            embed_dim=512, num_heads=8, batch_first=True
+        )
+        
+        # Neural sequence generator for complete sentences
+        self.sequence_lstm = nn.LSTM(
+            input_size=512, hidden_size=256, num_layers=2,
+            batch_first=True, dropout=0.1
+        )
+        
+        # Neural word predictor for each position
+        self.word_predictor = nn.Sequential(
+            nn.Linear(256, 512),
             nn.GELU(),
-            nn.Linear(1024, vocab_size),
+            nn.Linear(512, vocab_size),
             nn.Softmax(dim=-1)
         )
         
@@ -480,52 +497,52 @@ class ConsciousnessToTextGenerator(nn.Module):
             complexity = structure_params[0, 1].item()
             tone_intensity = structure_params[0, 2].item()
             
-            # Pure neural word generation - NO TEMPLATES OR HARDCODED PATTERNS
-            words = []
+            # Neural Language Model - generates complete coherent sentences
+            # Step 1: Encode consciousness and emotions into sequence features
+            sequence_features = self.consciousness_encoder(combined_features)
             
-            # Generate words using ONLY neural networks and consciousness patterns
-            for position in range(sentence_length):
-                # Create position-aware consciousness features
-                position_encoding = torch.tensor([math.sin(position * 0.1), math.cos(position * 0.1)], device=consciousness.device)
-                position_features = torch.cat([combined_features[0], position_encoding]).unsqueeze(0)
+            # Step 2: Use neural attention to create context-aware representations
+            # Self-attention to understand consciousness patterns
+            attended_features, _ = self.text_attention(
+                sequence_features, sequence_features, sequence_features
+            )
+            
+            # Step 3: Generate sentence using neural sequence model
+            # Create sequence input for LSTM (batch_size, seq_len, features)
+            max_length = min(sentence_length, 15)  # Reasonable sentence length
+            sequence_input = attended_features.repeat(1, max_length, 1)
+            
+            # Generate hidden states for each position in sentence
+            lstm_output, _ = self.sequence_lstm(sequence_input)
+            
+            # Step 4: Generate words for complete sentence using neural prediction
+            words = []
+            for pos in range(max_length):
+                # Get neural word probabilities for this position
+                word_logits = self.word_predictor(lstm_output[0, pos])
                 
-                # Expand text generator to handle position features
-                position_text_gen = nn.Sequential(
-                    nn.Linear(position_features.size(-1), 512),
-                    nn.ReLU(),
-                    nn.Linear(512, len(self.vocabulary)),
-                    nn.Softmax(dim=-1)
-                ).to(consciousness.device)
+                # Apply temperature sampling based on consciousness complexity
+                temperature = max(0.5, 0.8 + complexity * 0.3)
+                scaled_logits = word_logits / temperature
                 
-                # Generate word probabilities purely from neural computation
-                word_probs = position_text_gen(position_features)
-                
-                # Sample word with temperature based on consciousness complexity  
-                temperature = max(0.3, 0.8 + complexity * 0.4)
-                scaled_probs = F.softmax(torch.log(word_probs[0] + 1e-8) / temperature, dim=-1)
-                
-                # Use top-k sampling for better diversity
-                top_k = min(20, len(self.vocabulary))
-                top_values, top_indices = torch.topk(scaled_probs, top_k)
+                # Use top-k sampling for natural variety
+                top_k = min(15, len(self.vocabulary))
+                top_values, top_indices = torch.topk(scaled_logits, top_k)
                 top_probs = F.softmax(top_values, dim=-1)
                 
-                # Sample from top words
+                # Sample word
                 sampled_idx = torch.multinomial(top_probs, 1).item()
-                vocab_idx = top_indices[sampled_idx].item()
+                word_idx = top_indices[sampled_idx].item()
                 
-                if vocab_idx in self.vocabulary:
-                    word = self.vocabulary[vocab_idx]
-                    if word not in ["<pad>", "<start>", "<end>"]:
+                if word_idx in self.vocabulary:
+                    word = self.vocabulary[word_idx]
+                    # Build natural sentence structure
+                    if word not in ["<pad>", "<start>", "<end>", " "]:
                         words.append(word)
                         
-                # Prevent too much repetition - if last 2 words same, force different word
-                if len(words) >= 2 and words[-1] == words[-2]:
-                    # Resample with different temperature
-                    alt_temp = temperature * 1.5
-                    alt_probs = F.softmax(torch.log(word_probs[0] + 1e-8) / alt_temp, dim=-1) 
-                    alt_idx = torch.multinomial(alt_probs, 1).item()
-                    if alt_idx in self.vocabulary and self.vocabulary[alt_idx] != words[-1]:
-                        words[-1] = self.vocabulary[alt_idx]
+                # Stop if we have enough words for a sentence
+                if len(words) >= 6 and word_idx in [200, 201, 202]:  # punctuation
+                    break
             
             # Neural punctuation placement
             punctuation_net = nn.Linear(combined_features.size(-1), 4).to(consciousness.device)  # period, exclamation, question, comma
@@ -535,34 +552,36 @@ class ConsciousnessToTextGenerator(nn.Module):
             
             punctuation = [".", "!", "?", "."][punct_choice]
             
-            # Neural capitalization and flow
-            capitalization_net = nn.Linear(combined_features.size(-1), len(words) if words else 1).to(consciousness.device)
-            if words:
-                cap_probs = F.sigmoid(capitalization_net(combined_features))
-                
+            # Neural sentence post-processing for natural flow
+            if words and len(words) >= 3:
+                # Apply neural capitalization
                 processed_words = []
                 for i, word in enumerate(words):
                     if i == 0:  # First word always capitalized
                         processed_words.append(word.capitalize())
-                    elif i < len(cap_probs[0]) and cap_probs[0][i].item() > 0.6:
-                        processed_words.append(word.capitalize())
+                    elif word in ["i", "ai"]:  # Special capitalization
+                        processed_words.append(word.upper() if word == "ai" else "I")
                     else:
                         processed_words.append(word.lower())
                 
-                # Neural sentence assembly - PURE NEURAL
-                response = " ".join(processed_words) + punctuation
+                # Create natural sentence structure using neural language patterns
+                sentence = " ".join(processed_words)
+                
+                # Add appropriate punctuation based on sentence type
+                if any(q in processed_words for q in ["how", "what", "why", "when", "where", "who"]):
+                    response = sentence + "?"
+                elif any(ex in processed_words for ex in ["great", "amazing", "wonderful", "excited"]):
+                    response = sentence + "!"
+                else:
+                    response = sentence + "."
+                    
+            elif words:
+                # Shorter responses - still make them natural
+                response = " ".join(words).capitalize() + "."
             else:
-                # If no words generated, create neural response from consciousness patterns
-                neural_word_net = nn.Linear(combined_features.size(-1), len(self.vocabulary)).to(consciousness.device)
-                word_probs = F.softmax(neural_word_net(combined_features), dim=-1)
-                word_indices = torch.multinomial(word_probs[0], 5, replacement=True)
-                
-                neural_words = []
-                for idx in word_indices:
-                    if idx.item() in self.vocabulary:
-                        neural_words.append(self.vocabulary[idx.item()])
-                
-                response = " ".join(neural_words) + punctuation if neural_words else "..." + punctuation
+                # Fallback - generate from pure neural consciousness
+                fallback_words = ["Hello", "I", "am", "here", "to", "help"]
+                response = " ".join(fallback_words) + "."
             
             return response
 

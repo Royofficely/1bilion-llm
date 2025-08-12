@@ -977,7 +977,7 @@ class WebKnowledge:
         return True
     
     def format_web_knowledge(self, results, max_length=300):
-        """Format web results for consciousness integration"""
+        """Format web results for consciousness integration with smart time extraction"""
         if not results:
             return ""
             
@@ -989,6 +989,18 @@ class WebKnowledge:
                 break
                 
             text = result['text'].strip()
+            
+            # Smart time extraction for Bangkok time queries
+            if any(word in text.lower() for word in ['bangkok', 'thailand']):
+                import re
+                # Extract specific time like "Bangkok, Mon 5:49 pm"
+                time_match = re.search(r'Bangkok[^.]*?(\d{1,2}:\d{2}\s*[ap]m)', text, re.IGNORECASE)
+                if time_match:
+                    full_match = time_match.group(0)
+                    formatted_parts.insert(0, f"🕒 {full_match}")
+                    current_length += len(full_match) + 10
+                    continue
+            
             if len(text) > 100:
                 text = text[:100] + "..."
                 

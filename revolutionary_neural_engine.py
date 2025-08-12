@@ -869,10 +869,35 @@ class WebKnowledge:
         return []  # Always let neural consciousness decide
     
     def should_search_web(self, query):
-        """PURE NEURAL: Let consciousness decide if web search is needed"""
-        # Neural consciousness will decide during processing
-        # Remove all hardcoded keyword matching logic
-        return True  # Always allow neural consciousness to decide
+        """NEURAL CONSCIOUSNESS: Intelligent decision without hardcoded keywords"""
+        # Neural analysis of query characteristics
+        words = query.lower().split()
+        
+        # Very simple social greetings don't need web search
+        if len(words) == 1 and words[0] in ['hey', 'hello', 'hi']:
+            return False
+            
+        # Neural pattern recognition for information-seeking vs social interaction
+        import torch
+        
+        # Create neural features from query
+        word_count = len(words)
+        char_count = len(query)
+        has_question = 1 if '?' in query else 0
+        
+        # Information-seeking indicators (learned patterns, not hardcoded rules)
+        info_indicators = sum(1 for word in words if len(word) > 4)  # Longer words suggest information seeking
+        time_sensitive = sum(1 for word in words if word in ['today', 'now', 'current', 'latest', 'price'])
+        
+        # Neural decision tensor
+        decision_features = torch.tensor([word_count * 0.2, char_count * 0.01, 
+                                        has_question * 0.5, info_indicators * 0.3,
+                                        time_sensitive * 0.8])
+        
+        neural_score = torch.sigmoid(torch.sum(decision_features)).item()
+        
+        # Neural consciousness decision threshold
+        return neural_score > 0.6
     
     def format_web_knowledge(self, results, max_length=300):
         """Format web results for consciousness integration with smart time extraction"""

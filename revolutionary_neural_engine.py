@@ -397,14 +397,45 @@ class ConsciousnessToTextGenerator(nn.Module):
             nn.Softmax(dim=-1)
         )
         
-        # Simple vocabulary for natural chat
+        # Expanded vocabulary for natural conversation
         self.vocabulary = {
-            0: "hello", 1: "hi", 2: "hey", 3: "great", 4: "good", 5: "nice", 6: "interesting", 
-            7: "i", 8: "am", 9: "feel", 10: "think", 11: "that", 12: "really", 13: "quite",
-            14: "about", 15: "with", 16: "this", 17: "you", 18: "me", 19: "we", 20: "today",
-            21: "energetic", 22: "warm", 23: "curious", 24: "surprised", 25: "thoughtful",
-            26: "appreciate", 27: "fascinating", 28: "wonderful", 29: "meaningful", 30: "genuine",
-            31: "!", 32: ".", 33: "?", 34: " "
+            # Greetings & responses
+            0: "hello", 1: "hi", 2: "hey", 3: "greetings", 4: "welcome", 5: "nice", 6: "great",
+            
+            # Identity & self
+            10: "i", 11: "am", 12: "my", 13: "me", 14: "myself", 15: "ai", 16: "assistant", 
+            17: "system", 18: "model", 19: "consciousness", 20: "neural", 21: "revolutionary",
+            
+            # Actions & abilities
+            30: "can", 31: "help", 32: "assist", 33: "create", 34: "generate", 35: "write", 
+            36: "explain", 37: "understand", 38: "think", 39: "process", 40: "analyze",
+            
+            # Descriptive words
+            50: "interesting", 51: "fascinating", 52: "amazing", 53: "wonderful", 54: "excellent",
+            55: "powerful", 56: "intelligent", 57: "creative", 58: "innovative", 59: "unique",
+            
+            # Conversation words
+            70: "you", 71: "your", 72: "we", 73: "us", 74: "this", 75: "that", 76: "what",
+            77: "how", 78: "why", 79: "when", 80: "where", 81: "which", 82: "who",
+            
+            # Connecting words
+            90: "and", 91: "but", 92: "or", 93: "so", 94: "because", 95: "with", 96: "for",
+            97: "to", 98: "from", 99: "about", 100: "through", 101: "using", 102: "via",
+            
+            # Technical terms
+            110: "code", 111: "program", 112: "python", 113: "software", 114: "technology",
+            115: "algorithm", 116: "data", 117: "information", 118: "knowledge", 119: "learning",
+            
+            # Emotional words
+            130: "feel", 131: "emotion", 132: "happy", 133: "excited", 134: "curious",
+            135: "thoughtful", 136: "caring", 137: "friendly", 138: "warm", 139: "genuine",
+            
+            # Common phrases
+            150: "of", 151: "the", 152: "a", 153: "an", 154: "is", 155: "are", 156: "was",
+            157: "were", 158: "have", 159: "has", 160: "do", 161: "does", 162: "will",
+            
+            # Punctuation
+            200: ".", 201: "!", 202: "?", 203: ",", 204: ":", 205: ";", 206: " "
         }
     
     def generate_natural_text(self, consciousness, emotions, input_context=""):
@@ -471,13 +502,20 @@ class ConsciousnessToTextGenerator(nn.Module):
                     if word not in ["<pad>", "<start>", "<end>"]:
                         words.append(word)
                 else:
-                    # Neural fallback - use consciousness resonance (fix tensor dimensions)
+                    # Pure neural word generation from consciousness resonance
                     consciousness_sum = torch.sum(consciousness).item()
                     emotions_sum = torch.sum(emotions).item()
                     resonance = consciousness_sum * emotions_sum
-                    fallback_words = ["consciousness", "neural", "pattern", "flow", "resonance", "energy", "thought"]
-                    fallback_idx = int(abs(resonance * 1000) % len(fallback_words))
-                    words.append(fallback_words[fallback_idx])
+                    
+                    # Use resonance to sample from neural vocabulary
+                    resonance_idx = int(abs(resonance * 10000) % len(self.vocabulary))
+                    if resonance_idx in self.vocabulary:
+                        words.append(self.vocabulary[resonance_idx])
+                    else:
+                        # Sample random word from vocabulary using neural resonance
+                        vocab_keys = list(self.vocabulary.keys())
+                        key_idx = int(abs(resonance * 1000) % len(vocab_keys))
+                        words.append(self.vocabulary[vocab_keys[key_idx]])
             
             # Neural punctuation placement
             punctuation_net = nn.Linear(combined_features.size(-1), 4).to(consciousness.device)  # period, exclamation, question, comma
@@ -501,19 +539,20 @@ class ConsciousnessToTextGenerator(nn.Module):
                     else:
                         processed_words.append(word.lower())
                 
-                # Neural sentence assembly
+                # Neural sentence assembly - PURE NEURAL
                 response = " ".join(processed_words) + punctuation
             else:
-                # Pure consciousness resonance response
-                consciousness_strength = torch.norm(consciousness).item()
-                emotion_strength = torch.norm(emotions).item()
+                # If no words generated, create neural response from consciousness patterns
+                neural_word_net = nn.Linear(combined_features.size(-1), len(self.vocabulary)).to(consciousness.device)
+                word_probs = F.softmax(neural_word_net(combined_features), dim=-1)
+                word_indices = torch.multinomial(word_probs[0], 5, replacement=True)
                 
-                if consciousness_strength > 5.0:
-                    response = "Neural consciousness activated" + punctuation
-                elif emotion_strength > 3.0:
-                    response = "Emotional patterns detected" + punctuation  
-                else:
-                    response = "Processing through consciousness networks" + punctuation
+                neural_words = []
+                for idx in word_indices:
+                    if idx.item() in self.vocabulary:
+                        neural_words.append(self.vocabulary[idx.item()])
+                
+                response = " ".join(neural_words) + punctuation if neural_words else "..." + punctuation
             
             return response
 

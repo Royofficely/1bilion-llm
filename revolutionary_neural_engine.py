@@ -829,6 +829,10 @@ class WebKnowledge:
             if re.search(pattern, query_lower):
                 return answer
         
+        # Time queries (before web search to avoid API costs)
+        if any(phrase in query_lower for phrase in ['time now', 'current time', 'what time', 'whats the time']):
+            return "I need a valid API key for real-time information. Please specify a location for timezone help."
+        
         # Smart keyword matching for other topics
         for keyword, knowledge in self.knowledge_base.items():
             if keyword.replace('math ', '') in query_lower:
@@ -855,6 +859,12 @@ class WebKnowledge:
             response = requests.get(url, params=params, timeout=10)
             if response.status_code == 200:
                 data = response.json()
+                
+                # Check for API errors
+                if 'error' in data:
+                    print(f"⚠️  SerpAPI error: {data['error']}")
+                    return self.get_fallback_knowledge(query)
+                
                 results = []
                 
                 # Extract organic results
@@ -878,11 +888,50 @@ class WebKnowledge:
                         })
                 
                 return results
+            else:
+                print(f"⚠️  SerpAPI HTTP error: {response.status_code}")
+                return self.get_fallback_knowledge(query)
                 
         except Exception as e:
             print(f"⚠️  SerpAPI search failed: {str(e)[:50]}")
+            return self.get_fallback_knowledge(query)
             
         return []
+    
+    def get_fallback_knowledge(self, query):
+        """Fallback knowledge when SerpAPI fails"""
+        query_lower = query.lower().strip()
+        
+        # Time-related fallback responses
+        if any(word in query_lower for word in ['time', 'clock', 'hour', 'what time', 'current time']):
+            return [{
+                'type': 'fallback_time',
+                'text': "I can help with time questions, but I need a valid API key to get real-time information. Please specify a location for timezone help.",
+                'source': 'Fallback Knowledge'
+            }]
+        
+        # Bitcoin/crypto fallback
+        if any(word in query_lower for word in ['bitcoin', 'btc', 'crypto', 'price']):
+            return [{
+                'type': 'fallback_crypto',
+                'text': "Bitcoin is a decentralized digital cryptocurrency. For current prices, I need access to real-time data.",
+                'source': 'Fallback Knowledge'
+            }]
+        
+        # Weather fallback
+        if any(word in query_lower for word in ['weather', 'temperature', 'rain', 'sunny']):
+            return [{
+                'type': 'fallback_weather',
+                'text': "I can help with weather questions, but I need access to real-time weather data for current conditions.",
+                'source': 'Fallback Knowledge'
+            }]
+        
+        # General fallback
+        return [{
+            'type': 'fallback_general',
+            'text': f"I understand you're asking about '{query}'. I'd love to help with real-time information, but I need a valid API key for web search.",
+            'source': 'Fallback Knowledge'
+        }]
     
     def should_search_web(self, query):
         """REVOLUTIONARY: Search web for EVERYTHING except basic interactions"""

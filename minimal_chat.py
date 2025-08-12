@@ -56,49 +56,78 @@ def get_minimal_response(query, engine):
     if "how many" in query_lower and "letter r" in query_lower and "strawberry" in query_lower:
         return "3"
     
-    # Time questions
-    if "time" in query_lower and "bangkok" in query_lower:
-        return "8:32 AM, December 12, 2024"
-    
-    # Date questions
-    if any(word in query_lower for word in ["date", "today", "what day"]):
-        return "December 12, 2024"
-    
-    # Web search queries
-    if any(word in query_lower for word in ["bitcoin", "weather", "news", "president"]):
+    # Web search queries (including time and date - get real data!)
+    if any(word in query_lower for word in ["bitcoin", "weather", "news", "president", "time", "date", "today"]):
         return get_web_response(query, engine)
     
     # General AI queries
     return get_ai_response(query, engine)
 
 def get_web_response(query, engine):
-    """Get web response silently"""
+    """Get web response silently with real serper.dev data"""
     try:
         with contextlib.redirect_stdout(io.StringIO()), contextlib.redirect_stderr(io.StringIO()):
             result = engine.achieve_consciousness_with_validation(query)
         
         response = result['response']
+        query_lower = query.lower()
         
-        # Extract key info only
-        if "bitcoin" in query.lower() and "$" in response:
+        # Extract Bitcoin price
+        if "bitcoin" in query_lower and "$" in response:
             import re
             price_match = re.search(r'\$[\d,]+\.?\d*', response)
             if price_match:
                 return price_match.group()
         
-        if "weather" in query.lower():
+        # Extract weather info
+        if "weather" in query_lower:
             if "clear" in response.lower():
                 return "Clear"
             elif "cloudy" in response.lower():
-                return "Cloudy"
+                return "Cloudy" 
             elif "rain" in response.lower():
                 return "Rain"
         
-        # Return first meaningful part
+        # Extract time info - get real serper data
+        if "time" in query_lower:
+            # Look for time patterns in response
+            import re
+            time_patterns = [
+                r'\d{1,2}:\d{2}\s*(AM|PM|am|pm)',
+                r'\d{1,2}:\d{2}',
+                r'(\d{1,2}:\d{2}.*?(AM|PM))',
+            ]
+            for pattern in time_patterns:
+                time_match = re.search(pattern, response)
+                if time_match:
+                    return time_match.group(0)
+        
+        # Extract date info - get real serper data  
+        if any(word in query_lower for word in ["date", "today"]):
+            # Look for date patterns
+            import re
+            date_patterns = [
+                r'(January|February|March|April|May|June|July|August|September|October|November|December)\s+\d{1,2},?\s+\d{4}',
+                r'\d{1,2}/\d{1,2}/\d{4}',
+                r'\d{4}-\d{1,2}-\d{1,2}',
+            ]
+            for pattern in date_patterns:
+                date_match = re.search(pattern, response)
+                if date_match:
+                    return date_match.group(0)
+        
+        # Clean up long responses
         if len(response) > 50:
+            # Take first sentence that's meaningful
+            sentences = response.split('.')
+            for sentence in sentences:
+                sentence = sentence.strip()
+                if len(sentence) > 10 and len(sentence) < 100:
+                    return sentence + "."
+            
             return response[:50] + "..."
         
-        return response
+        return response.strip()
         
     except:
         return "Search failed"

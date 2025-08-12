@@ -56,7 +56,7 @@ def get_gpt_killing_response(query):
     if any(word in query_lower for word in ["bitcoin", "price", "btc"]):
         return get_bitcoin_price()
     
-    if any(word in query_lower for word in ["time", "clock"]) and "bangkok" in query_lower:
+    if any(word in query_lower for word in ["time", "clock", "tome"]) and "bangkok" in query_lower:
         return get_bangkok_time()
     
     if any(word in query_lower for word in ["date", "today", "what day"]):

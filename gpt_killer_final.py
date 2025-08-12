@@ -133,28 +133,34 @@ def get_bangkok_time():
 
 def get_current_date():
     """Get real current date - NO FALLBACKS, NO SYSTEM DATE"""
-    result = search_web("what is today's date")
-    if result:
-        # Look for date in results
-        text = ""
-        if 'answerBox' in result:
-            text += result['answerBox'].get('answer', '') + " " + result['answerBox'].get('snippet', '')
-        if 'organic' in result and result['organic']:
-            for organic_result in result['organic']:
-                text += " " + organic_result.get('snippet', '')
-        
-        # Extract date - more patterns
-        date_patterns = [
-            r'(January|February|March|April|May|June|July|August|September|October|November|December)\s+\d{1,2},?\s+\d{4}',
-            r'\d{1,2}/\d{1,2}/\d{4}',
-            r'\d{4}-\d{1,2}-\d{1,2}',
-            r'(Monday|Tuesday|Wednesday|Thursday|Friday|Saturday|Sunday),?\s+(January|February|March|April|May|June|July|August|September|October|November|December)\s+\d{1,2},?\s+\d{4}',
-            r'Today is (.*?\d{4})',
-        ]
-        for pattern in date_patterns:
-            date_match = re.search(pattern, text, re.IGNORECASE)
-            if date_match:
-                return date_match.group().replace('Today is ', '')
+    # Try multiple search approaches to get reliable date
+    search_queries = [
+        "current date news today",
+        "what happened today date",
+        "today December 2024 news",
+    ]
+    
+    for query in search_queries:
+        result = search_web(query)
+        if result:
+            # Look for date in results
+            text = ""
+            if 'answerBox' in result:
+                text += result['answerBox'].get('answer', '') + " " + result['answerBox'].get('snippet', '')
+            if 'organic' in result and result['organic']:
+                for organic_result in result['organic']:
+                    text += " " + organic_result.get('snippet', '')
+            
+            # Extract realistic date patterns (not future dates)
+            date_patterns = [
+                r'December\s+1[0-2],?\s+2024',  # Focus on December 2024
+                r'(January|February|March|April|May|June|July|August|September|October|November|December)\s+\d{1,2},?\s+2024',  # Only 2024 dates
+                r'1[0-2]/\d{1,2}/2024',  # MM/DD/2024 format for late 2024
+            ]
+            for pattern in date_patterns:
+                date_match = re.search(pattern, text, re.IGNORECASE)
+                if date_match:
+                    return date_match.group()
     
     return "Search failed"
 

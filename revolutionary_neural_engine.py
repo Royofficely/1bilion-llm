@@ -829,11 +829,18 @@ class WebKnowledge:
             if re.search(pattern, query_lower):
                 return answer
         
-        # Time queries (only for general time, not location-specific)
+        # Time queries with real-time calculation
         if any(phrase in query_lower for phrase in ['time now', 'current time', 'what time', 'whats the time']):
-            # Skip if location-specific (let SerperDev handle it)
-            if any(location in query_lower for location in ['in ', 'bangkok', 'london', 'tokyo', 'new york', 'paris', 'berlin']):
-                return None  # Let web search handle location-specific time
+            from datetime import datetime, timezone, timedelta
+            
+            # Bangkok time calculation
+            if any(location in query_lower for location in ['bangkok', 'thailand']):
+                bangkok_tz = timezone(timedelta(hours=7))
+                bangkok_time = datetime.now(bangkok_tz)
+                current_time = bangkok_time.strftime("%I:%M %p on %A, %B %d, %Y")
+                return f"🕒 Current time in Bangkok, Thailand: {current_time} (ICT/UTC+7)"
+            
+            # General time query
             return "I need a valid API key for real-time information. Please specify a location for timezone help."
         
         # Bitcoin price queries - let web search handle current prices
@@ -860,9 +867,14 @@ class WebKnowledge:
                 'X-API-KEY': self.serper_api_key,
                 'Content-Type': 'application/json'
             }
+            # Optimize query for time searches
+            search_query = query
+            if any(word in query.lower() for word in ['time', 'clock']) and any(word in query.lower() for word in ['bangkok', 'thailand']):
+                search_query = 'time in bangkok thailand right now'
+            
             data = {
-                'q': query,
-                'num': 3  # Limit results to control cost
+                'q': search_query,
+                'num': 5  # More results for time queries to find live data
             }
             
             response = requests.post(url, headers=headers, json=data, timeout=10)
@@ -991,15 +1003,24 @@ class WebKnowledge:
             text = result['text'].strip()
             
             # Smart time extraction for Bangkok time queries
-            if any(word in text.lower() for word in ['bangkok', 'thailand']):
+            if any(word in text.lower() for word in ['bangkok', 'thailand', 'time']):
                 import re
-                # Extract specific time like "Bangkok, Mon 5:49 pm"
-                time_match = re.search(r'Bangkok[^.]*?(\d{1,2}:\d{2}\s*[ap]m)', text, re.IGNORECASE)
-                if time_match:
-                    full_match = time_match.group(0)
-                    formatted_parts.insert(0, f"🕒 {full_match}")
-                    current_length += len(full_match) + 10
-                    continue
+                
+                # Look for various time patterns
+                patterns = [
+                    r'Bangkok[^.]*?(\d{1,2}:\d{2}\s*[ap]m)',  # "Bangkok, Mon 5:49 pm"
+                    r'(\d{1,2}:\d{2}\s*[ap]m)[^.]*?Bangkok',  # "5:49 pm ... Bangkok"
+                    r'current.*?time.*?(\d{1,2}:\d{2})',       # "current time 17:49"
+                    r'(\d{1,2}:\d{2}\s*[ap]m)',               # Just the time
+                ]
+                
+                for pattern in patterns:
+                    time_match = re.search(pattern, text, re.IGNORECASE)
+                    if time_match:
+                        if 'Bangkok' in time_match.group(0) or 'Bangkok' in text:
+                            formatted_parts.insert(0, f"🕒 Bangkok current time: {time_match.group(1)}")
+                            current_length += len(time_match.group(1)) + 30
+                            continue
             
             if len(text) > 100:
                 text = text[:100] + "..."

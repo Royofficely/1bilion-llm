@@ -92,8 +92,12 @@ class KillerEngine:
         
         router_path = self.checkpoint_dir / "router.pt"
         if router_path.exists():
-            router.load_state_dict(torch.load(router_path, map_location=self.device))
-            print("🎯 Router loaded from checkpoint")
+            try:
+                router.load_state_dict(torch.load(router_path, map_location=self.device))
+                print("🎯 Router loaded from checkpoint")
+            except RuntimeError as e:
+                print(f"⚠️  Router checkpoint mismatch: {str(e)[:100]}...")
+                print("🎯 Using fresh router (will be retrained)")
         else:
             print("🎯 Using fresh router")
         

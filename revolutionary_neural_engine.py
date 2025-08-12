@@ -176,11 +176,11 @@ class MemoryCrystallization(nn.Module):
             nn.Softmax(dim=-1)
         )
         
-        # Memory integration network
+        # Memory integration network (consciousness + activated_memories both consciousness_dim)
         self.memory_integrator = nn.Sequential(
-            nn.Linear(consciousness_dim + memory_depth, consciousness_dim * 2),
+            nn.Linear(consciousness_dim * 2, consciousness_dim * 2),  # 512 -> 512
             nn.GELU(),
-            nn.Linear(consciousness_dim * 2, consciousness_dim),
+            nn.Linear(consciousness_dim * 2, consciousness_dim),      # 512 -> 256
             nn.LayerNorm(consciousness_dim)
         )
         
@@ -192,15 +192,15 @@ class MemoryCrystallization(nn.Module):
         # Detect which crystals resonate with current consciousness
         resonance_weights = self.resonance_detector(consciousness)
         
-        # Extract relevant memories
-        activated_memories = torch.zeros(1, self.memory_depth, device=consciousness.device)
+        # Extract relevant memories (in consciousness space)
+        activated_memories = torch.zeros(1, self.consciousness_dim, device=consciousness.device)
         for i, weight in enumerate(resonance_weights[0]):
             if weight > 0.1:  # Significant resonance
-                crystal_memory = torch.mean(self.memory_crystals[i], dim=0)
+                crystal_memory = torch.mean(self.memory_crystals[i], dim=0)  # [256] from [512, 256]
                 activated_memories += weight * crystal_memory.unsqueeze(0)
         
-        # Integrate memories with current consciousness
-        memory_consciousness = torch.cat([consciousness, activated_memories], dim=-1)
+        # Integrate memories with current consciousness (both consciousness_dim)
+        memory_consciousness = torch.cat([consciousness, activated_memories], dim=-1)  # [1, 512]
         enriched_consciousness = self.memory_integrator(memory_consciousness)
         
         # Form new memory crystal

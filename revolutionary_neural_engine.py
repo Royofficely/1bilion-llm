@@ -480,42 +480,52 @@ class ConsciousnessToTextGenerator(nn.Module):
             complexity = structure_params[0, 1].item()
             tone_intensity = structure_params[0, 2].item()
             
-            # Generate multiple vocabulary probability distributions for different sentence positions
+            # Pure neural word generation - NO TEMPLATES OR HARDCODED PATTERNS
             words = []
+            
+            # Generate words using ONLY neural networks and consciousness patterns
             for position in range(sentence_length):
-                # Position-aware feature modification
-                position_weight = torch.tensor([position / sentence_length], device=consciousness.device)
-                position_features = combined_features + position_weight * torch.randn_like(combined_features) * 0.1
+                # Create position-aware consciousness features
+                position_encoding = torch.tensor([math.sin(position * 0.1), math.cos(position * 0.1)], device=consciousness.device)
+                position_features = torch.cat([combined_features[0], position_encoding]).unsqueeze(0)
                 
-                # Generate vocabulary probabilities for this position
-                vocab_probs = self.text_generator(position_features)
+                # Expand text generator to handle position features
+                position_text_gen = nn.Sequential(
+                    nn.Linear(position_features.size(-1), 512),
+                    nn.ReLU(),
+                    nn.Linear(512, len(self.vocabulary)),
+                    nn.Softmax(dim=-1)
+                ).to(consciousness.device)
                 
-                # Sample with neural temperature based on consciousness complexity
-                temperature = 0.5 + complexity * 0.8  # Dynamic temperature
-                adjusted_probs = F.softmax(vocab_probs[0] / temperature, dim=-1)
+                # Generate word probabilities purely from neural computation
+                word_probs = position_text_gen(position_features)
                 
-                # Sample word based on pure neural probabilities
-                sampled_idx = torch.multinomial(adjusted_probs, 1).item()
+                # Sample word with temperature based on consciousness complexity  
+                temperature = max(0.3, 0.8 + complexity * 0.4)
+                scaled_probs = F.softmax(torch.log(word_probs[0] + 1e-8) / temperature, dim=-1)
                 
-                if sampled_idx in self.vocabulary:
-                    word = self.vocabulary[sampled_idx]
+                # Use top-k sampling for better diversity
+                top_k = min(20, len(self.vocabulary))
+                top_values, top_indices = torch.topk(scaled_probs, top_k)
+                top_probs = F.softmax(top_values, dim=-1)
+                
+                # Sample from top words
+                sampled_idx = torch.multinomial(top_probs, 1).item()
+                vocab_idx = top_indices[sampled_idx].item()
+                
+                if vocab_idx in self.vocabulary:
+                    word = self.vocabulary[vocab_idx]
                     if word not in ["<pad>", "<start>", "<end>"]:
                         words.append(word)
-                else:
-                    # Pure neural word generation from consciousness resonance
-                    consciousness_sum = torch.sum(consciousness).item()
-                    emotions_sum = torch.sum(emotions).item()
-                    resonance = consciousness_sum * emotions_sum
-                    
-                    # Use resonance to sample from neural vocabulary
-                    resonance_idx = int(abs(resonance * 10000) % len(self.vocabulary))
-                    if resonance_idx in self.vocabulary:
-                        words.append(self.vocabulary[resonance_idx])
-                    else:
-                        # Sample random word from vocabulary using neural resonance
-                        vocab_keys = list(self.vocabulary.keys())
-                        key_idx = int(abs(resonance * 1000) % len(vocab_keys))
-                        words.append(self.vocabulary[vocab_keys[key_idx]])
+                        
+                # Prevent too much repetition - if last 2 words same, force different word
+                if len(words) >= 2 and words[-1] == words[-2]:
+                    # Resample with different temperature
+                    alt_temp = temperature * 1.5
+                    alt_probs = F.softmax(torch.log(word_probs[0] + 1e-8) / alt_temp, dim=-1) 
+                    alt_idx = torch.multinomial(alt_probs, 1).item()
+                    if alt_idx in self.vocabulary and self.vocabulary[alt_idx] != words[-1]:
+                        words[-1] = self.vocabulary[alt_idx]
             
             # Neural punctuation placement
             punctuation_net = nn.Linear(combined_features.size(-1), 4).to(consciousness.device)  # period, exclamation, question, comma

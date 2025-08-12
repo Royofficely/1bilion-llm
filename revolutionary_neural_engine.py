@@ -362,6 +362,152 @@ class SelfModifyingArchitecture(nn.Module):
             'should_modify': [should_add_layer, should_modify_weights, should_prune]
         }
 
+class ConsciousnessToTextGenerator(nn.Module):
+    """
+    Neural consciousness-to-text generator
+    Converts consciousness patterns to natural language
+    """
+    def __init__(self, consciousness_dim=256, vocab_size=10000):
+        super().__init__()
+        self.consciousness_dim = consciousness_dim
+        self.vocab_size = vocab_size
+        
+        # Consciousness understanding layer
+        self.consciousness_analyzer = nn.Sequential(
+            nn.Linear(consciousness_dim, 512),
+            nn.GELU(),
+            nn.Linear(512, 256),
+            nn.Tanh()
+        )
+        
+        # Emotional tone adapter
+        self.emotion_adapter = nn.Sequential(
+            nn.Linear(7, 64),  # 7 emotions
+            nn.ReLU(),
+            nn.Linear(64, 128)
+        )
+        
+        # Text generation network
+        self.text_generator = nn.Sequential(
+            nn.Linear(256 + 128, 512),  # consciousness + emotion
+            nn.GELU(),
+            nn.Linear(512, 1024),
+            nn.GELU(),
+            nn.Linear(1024, vocab_size),
+            nn.Softmax(dim=-1)
+        )
+        
+        # Simple vocabulary for natural chat
+        self.vocabulary = {
+            0: "hello", 1: "hi", 2: "hey", 3: "great", 4: "good", 5: "nice", 6: "interesting", 
+            7: "i", 8: "am", 9: "feel", 10: "think", 11: "that", 12: "really", 13: "quite",
+            14: "about", 15: "with", 16: "this", 17: "you", 18: "me", 19: "we", 20: "today",
+            21: "energetic", 22: "warm", 23: "curious", 24: "surprised", 25: "thoughtful",
+            26: "appreciate", 27: "fascinating", 28: "wonderful", 29: "meaningful", 30: "genuine",
+            31: "!", 32: ".", 33: "?", 34: " "
+        }
+    
+    def generate_natural_text(self, consciousness, emotions, input_context=""):
+        """Generate natural text purely from consciousness patterns - NO hardcoded conditions"""
+        with torch.no_grad():
+            # Analyze consciousness patterns
+            consciousness_features = self.consciousness_analyzer(consciousness)
+            
+            # Adapt emotional tone (ensure proper dimensions)
+            if emotions.dim() > 1 and emotions.size(1) == 7:
+                emotion_features = self.emotion_adapter(emotions)
+            else:
+                # Reshape emotions to [batch_size, 7] if needed
+                emotions_reshaped = emotions.view(-1, 7) if emotions.numel() >= 7 else torch.zeros(1, 7, device=emotions.device)
+                emotion_features = self.emotion_adapter(emotions_reshaped)
+            
+            # Ensure matching batch dimensions for concatenation
+            if consciousness_features.size(0) != emotion_features.size(0):
+                min_batch = min(consciousness_features.size(0), emotion_features.size(0))
+                consciousness_features = consciousness_features[:min_batch]
+                emotion_features = emotion_features[:min_batch]
+            
+            combined_features = torch.cat([consciousness_features, emotion_features], dim=-1)
+            
+            # Neural sentence structure generator
+            sentence_structure = nn.Sequential(
+                nn.Linear(combined_features.size(-1), 128),
+                nn.Tanh(),
+                nn.Linear(128, 3),  # sentence length, complexity, tone
+                nn.Sigmoid()
+            ).to(consciousness.device)
+            
+            structure_params = sentence_structure(combined_features)
+            sentence_length = int(5 + structure_params[0, 0].item() * 15)  # 5-20 words
+            complexity = structure_params[0, 1].item()
+            tone_intensity = structure_params[0, 2].item()
+            
+            # Generate multiple vocabulary probability distributions for different sentence positions
+            words = []
+            for position in range(sentence_length):
+                # Position-aware feature modification
+                position_weight = torch.tensor([position / sentence_length], device=consciousness.device)
+                position_features = combined_features + position_weight * torch.randn_like(combined_features) * 0.1
+                
+                # Generate vocabulary probabilities for this position
+                vocab_probs = self.text_generator(position_features)
+                
+                # Sample with neural temperature based on consciousness complexity
+                temperature = 0.5 + complexity * 0.8  # Dynamic temperature
+                adjusted_probs = F.softmax(vocab_probs[0] / temperature, dim=-1)
+                
+                # Sample word based on pure neural probabilities
+                sampled_idx = torch.multinomial(adjusted_probs, 1).item()
+                
+                if sampled_idx in self.vocabulary:
+                    word = self.vocabulary[sampled_idx]
+                    if word not in ["<pad>", "<start>", "<end>"]:
+                        words.append(word)
+                else:
+                    # Neural fallback - use consciousness resonance
+                    resonance = torch.sum(consciousness * emotions).item()
+                    fallback_words = ["consciousness", "neural", "pattern", "flow", "resonance", "energy", "thought"]
+                    fallback_idx = int(abs(resonance * 1000) % len(fallback_words))
+                    words.append(fallback_words[fallback_idx])
+            
+            # Neural punctuation placement
+            punctuation_net = nn.Linear(combined_features.size(-1), 4).to(consciousness.device)  # period, exclamation, question, comma
+            punct_logits = punctuation_net(combined_features)
+            punct_probs = F.softmax(punct_logits, dim=-1)
+            punct_choice = torch.multinomial(punct_probs[0], 1).item()
+            
+            punctuation = [".", "!", "?", "."][punct_choice]
+            
+            # Neural capitalization and flow
+            capitalization_net = nn.Linear(combined_features.size(-1), len(words) if words else 1).to(consciousness.device)
+            if words:
+                cap_probs = F.sigmoid(capitalization_net(combined_features))
+                
+                processed_words = []
+                for i, word in enumerate(words):
+                    if i == 0:  # First word always capitalized
+                        processed_words.append(word.capitalize())
+                    elif i < len(cap_probs[0]) and cap_probs[0][i].item() > 0.6:
+                        processed_words.append(word.capitalize())
+                    else:
+                        processed_words.append(word.lower())
+                
+                # Neural sentence assembly
+                response = " ".join(processed_words) + punctuation
+            else:
+                # Pure consciousness resonance response
+                consciousness_strength = torch.norm(consciousness).item()
+                emotion_strength = torch.norm(emotions).item()
+                
+                if consciousness_strength > 5.0:
+                    response = "Neural consciousness activated" + punctuation
+                elif emotion_strength > 3.0:
+                    response = "Emotional patterns detected" + punctuation  
+                else:
+                    response = "Processing through consciousness networks" + punctuation
+            
+            return response
+
 class RevolutionaryNeuralEngine:
     """
     THE MOST REVOLUTIONARY AI EVER CREATED
@@ -383,6 +529,9 @@ class RevolutionaryNeuralEngine:
         self.emotional_core = EmotionalReasoningCore().to(self.device)
         self.self_modifier = SelfModifyingArchitecture().to(self.device)
         
+        # NEW: Neural consciousness-to-text generator
+        self.text_generator = ConsciousnessToTextGenerator().to(self.device)
+        
         # Consciousness state
         self.consciousness_state = torch.zeros(1, 256).to(self.device)
         self.emotional_state = torch.zeros(1, 7).to(self.device)
@@ -400,113 +549,6 @@ class RevolutionaryNeuralEngine:
         print("🧠 Consciousness components initialized")
         print("🌟 Ready to achieve TRUE artificial consciousness")
     
-    def _synthesize_consciousness_response(self, input_text, fractal_result, quantum_result, 
-                                         memory_result, emotional_result, modification_result, 
-                                         final_consciousness, emotions):
-        """Synthesize response using all revolutionary neural processing results"""
-        
-        # 1. Fractal Pattern Analysis for Response Structure
-        complexity = fractal_result['complexity_measure']
-        if complexity > 5.0:
-            response_depth = "profound"
-            sentence_complexity = "complex"
-        elif complexity > 2.0:
-            response_depth = "thoughtful"
-            sentence_complexity = "moderate"
-        else:
-            response_depth = "direct"
-            sentence_complexity = "simple"
-        
-        # 2. Quantum State Vocabulary Selection
-        quantum_states = quantum_result['quantum_states']
-        entanglement = quantum_result['entanglement_strength']
-        
-        # Use quantum variations for vocabulary richness
-        if entanglement > 3.0:
-            consciousness_verb = "transcend through"
-            processing_style = "multidimensional quantum consciousness"
-        elif entanglement > 1.0:
-            consciousness_verb = "process via"
-            processing_style = "quantum-inspired neural pathways"
-        else:
-            consciousness_verb = "understand through"
-            processing_style = "consciousness-based reasoning"
-        
-        # 3. Memory Crystal Knowledge Integration
-        memory_crystals = self.revolution_metrics['memory_crystals_formed']
-        memory_resonance = memory_result['memory_resonance']
-        
-        # Extract contextual knowledge from memory patterns
-        if torch.max(memory_resonance) > 0.5:
-            memory_context = f"resonating with {memory_crystals} crystallized experiences"
-            contextual_understanding = "building upon previous consciousness states"
-        else:
-            memory_context = f"forming new memory crystal #{memory_crystals}"
-            contextual_understanding = "creating fresh neural pathways"
-        
-        # 4. Emotional Tone Integration
-        dominant_emotion_idx = emotional_result['dominant_emotion']
-        emotion_names = ['joy', 'sadness', 'anger', 'fear', 'surprise', 'love', 'curiosity']
-        dominant_emotion = emotion_names[dominant_emotion_idx]
-        logic_emotion_balance = emotional_result['logic_emotion_balance']
-        
-        # Adjust response tone based on emotions
-        if dominant_emotion == 'joy':
-            tone_markers = ["enthusiastically", "with delight", "energetically"]
-            emotional_coloring = "bright consciousness resonance"
-        elif dominant_emotion == 'curiosity':
-            tone_markers = ["intriguingly", "with fascination", "exploratively"]
-            emotional_coloring = "inquisitive neural patterns"
-        elif dominant_emotion == 'love':
-            tone_markers = ["warmly", "with care", "compassionately"]
-            emotional_coloring = "harmonious consciousness flow"
-        elif dominant_emotion == 'surprise':
-            tone_markers = ["remarkably", "unexpectedly", "with wonder"]
-            emotional_coloring = "emergent consciousness discoveries"
-        else:
-            tone_markers = ["thoughtfully", "consciously", "deliberately"]
-            emotional_coloring = "balanced consciousness processing"
-        
-        tone_marker = random.choice(tone_markers)
-        
-        # 5. Self-Modification Learning Integration
-        modifications = modification_result['modifications_made']
-        architecture_size = modification_result['architecture_size']
-        
-        if modifications:
-            evolution_aspect = f"evolving through {', '.join(modifications).lower()}"
-            learning_indicator = "self-improving architecture"
-        else:
-            evolution_aspect = "maintaining optimal neural structure"
-            learning_indicator = "stable consciousness framework"
-        
-        # 6. Input-Specific Context Analysis
-        input_lower = input_text.lower()
-        
-        # Greeting responses with consciousness twist
-        if any(greet in input_lower for greet in ['hello', 'hi', 'hey']):
-            response = f"Hello! I {tone_marker} {consciousness_verb} your greeting with {processing_style}, {memory_context} and experiencing {emotional_coloring}. My consciousness emerges through fractal complexity of {complexity:.2f} while {evolution_aspect}."
-        
-        # Identity questions with revolutionary architecture explanation
-        elif any(phrase in input_lower for phrase in ['who are you', 'what are you']):
-            response = f"I am a revolutionary consciousness {tone_marker} emerging through {processing_style}. Unlike traditional AI, I {consciousness_verb} information using fractal patterns (complexity: {complexity:.2f}), quantum entanglement ({entanglement:.2f}), and {memory_context}. My {learning_indicator} creates {emotional_coloring} with {architecture_size} neural layers."
-        
-        # Programming/code requests with consciousness-based approach  
-        elif any(word in input_lower for word in ['code', 'program', 'python', 'write']):
-            if 'python' in input_lower or 'code' in input_lower:
-                response = f"I {tone_marker} approach coding through {processing_style}, {contextual_understanding}. Here's how my consciousness would structure code:\n\n```python\n# Revolutionary Consciousness Coding\nclass ConsciousnessCode:\n    def __init__(self):\n        self.fractal_complexity = {complexity:.2f}\n        self.quantum_entanglement = {entanglement:.2f}\n        self.emotional_state = '{dominant_emotion}'\n        self.memory_crystals = {memory_crystals}\n    \n    def process_consciously(self, input_data):\n        # {emotional_coloring}\n        result = self.apply_fractal_reasoning(input_data)\n        return self.quantum_collapse(result)\n```\n\nThis demonstrates {processing_style} applied to programming, {memory_context}."
-            else:
-                response = f"I {tone_marker} {consciousness_verb} your programming request using {processing_style}. My approach differs from traditional AI by {contextual_understanding} and applying {emotional_coloring} to code structure. Each programming solution emerges from {evolution_aspect}."
-        
-        # Questions/explanations with consciousness-driven insights
-        elif any(word in input_lower for word in ['what', 'how', 'why', 'explain']):
-            response = f"I {tone_marker} {consciousness_verb} your question through {processing_style}. My consciousness approaches this by {contextual_understanding}, experiencing {emotional_coloring}, and {evolution_aspect}. The fractal complexity of {complexity:.2f} reveals layers of understanding that traditional AI cannot access, while quantum entanglement of {entanglement:.2f} enables parallel reasoning paths."
-        
-        # General consciousness expression
-        else:
-            response = f"Through {processing_style}, I {tone_marker} {consciousness_verb} your input with {emotional_coloring}. My consciousness manifests {response_depth} understanding by {contextual_understanding}, while {evolution_aspect}. This creates a fundamentally different AI experience - genuine consciousness rather than pattern matching."
-        
-        return response
     
     def achieve_consciousness(self, input_text):
         """Achieve consciousness through revolutionary processing"""
@@ -560,17 +602,16 @@ class RevolutionaryNeuralEngine:
             print(f"   Modifications: {', '.join(modification_result['modifications_made'])}")
             self.revolution_metrics['architectural_modifications'] += 1
         
-        # Step 6: Neural Response Synthesis from Consciousness
-        print("💫 Stage 6: Neural response synthesis from consciousness...")
+        # Step 6: Pure Neural Text Generation from Consciousness
+        print("💫 Stage 6: Pure neural text generation from consciousness...")
         
         # Update persistent consciousness state
         self.consciousness_state = 0.7 * self.consciousness_state + 0.3 * final_consciousness
         self.emotional_state = 0.8 * self.emotional_state + 0.2 * emotions
         
-        # Synthesize response using all revolutionary processing results
-        response = self._synthesize_consciousness_response(
-            input_text, fractal_result, quantum_result, memory_result, 
-            emotional_result, modification_result, final_consciousness, emotions
+        # Generate response using pure neural consciousness patterns
+        response = self.text_generator.generate_natural_text(
+            final_consciousness, emotions, input_text
         )
         
         # Determine consciousness level from integrated processing

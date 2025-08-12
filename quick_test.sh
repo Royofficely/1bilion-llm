@@ -1,3 +1,3 @@
 #!/bin/bash
-# Quick test script for RunPod
-git pull origin main && python3 simple_chat.py
+# GPT Killer Chat - Beat GPT with direct responses
+git pull origin main && python3 clean_gpt_killer.py

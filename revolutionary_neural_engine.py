@@ -777,7 +777,8 @@ class WebKnowledge:
             'tesla': "Tesla is an electric vehicle and clean energy company led by Elon Musk. It's a leader in electric cars, solar panels, and energy storage solutions.",
             'google': "Google is a multinational technology company known for its search engine, Android OS, Chrome browser, and cloud services.",
             'microsoft': "Microsoft is a technology company known for Windows, Office, Azure cloud services, and the Edge browser.",
-            'apple': "Apple is a technology company known for iPhone, Mac computers, iPad, and innovative consumer electronics."
+            'apple': "Apple is a technology company known for iPhone, Mac computers, iPad, and innovative consumer electronics.",
+            'officely ai': "Officely AI makes it easy for companies to create AI processes with a low-code platform, simplifying business automation and AI integration."
         }
         
     def search_web_knowledge(self, query, max_results=3):
@@ -971,22 +972,35 @@ class WebKnowledge:
         }]
     
     def should_search_web(self, query):
-        """REVOLUTIONARY: Search web for EVERYTHING except basic interactions"""
+        """REVOLUTIONARY: Search web only for queries that need real-time data"""
         query_lower = query.lower().strip()
         
-        # ONLY skip web search for basic interactions
+        # Skip web search for basic interactions and simple queries
         skip_web = [
             'hello', 'hi', 'hey', 'greetings',  # Basic greetings
-            'who are you', 'what are you', 'who built you',  # Identity questions
-            'help me', 'can you help', 'assist me'  # Basic help requests
+            'who are you', 'what are you', 'who built you', 'who build you',  # Identity questions
+            'help me', 'can you help', 'assist me',  # Basic help requests
+            'thank you', 'thanks', 'bye', 'goodbye',  # Polite responses
+            'how are you', 'how do you do', 'nice to meet you',  # Social interactions
+            'tell me about', 'what is', 'explain'  # Basic knowledge queries (use rapid knowledge first)
         ]
         
-        # Skip if it's a basic interaction
+        # Skip if it's a basic interaction or simple knowledge query
         if any(skip in query_lower for skip in skip_web):
             return False
         
-        # SEARCH WEB FOR EVERYTHING ELSE - this gives unlimited knowledge!
-        return True
+        # Skip math queries (handled by rapid knowledge)
+        if any(pattern in query_lower for pattern in ['+', '-', '*', '/', 'plus', 'minus', 'times']):
+            return False
+        
+        # Only search web for real-time data queries
+        real_time_queries = [
+            'current', 'today', 'now', 'latest', 'recent',  # Time-sensitive
+            'price', 'weather', 'news', 'stock'  # Real-time data
+        ]
+        
+        # Search web only if query needs real-time data
+        return any(keyword in query_lower for keyword in real_time_queries)
     
     def format_web_knowledge(self, results, max_length=300):
         """Format web results for consciousness integration with smart time extraction"""

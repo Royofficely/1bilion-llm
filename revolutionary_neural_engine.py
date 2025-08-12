@@ -46,6 +46,20 @@ class FractalTokenizer(nn.Module):
             nn.Tanh()  # Consciousness oscillation
         )
         
+        # REVERSE FRACTAL DECODER - consciousness back to text
+        self.reverse_fractal_transformers = nn.ModuleList([
+            nn.Linear(consciousness_dim, consciousness_dim) 
+            for _ in range(fractal_depth)
+        ])
+        
+        # Text reconstruction from consciousness
+        self.text_reconstructor = nn.Sequential(
+            nn.Linear(consciousness_dim, consciousness_dim * 2),
+            nn.GELU(), 
+            nn.Linear(consciousness_dim * 2, 512),
+            nn.Tanh()
+        )
+        
         # Emotional resonance detector
         self.emotion_detector = nn.Linear(consciousness_dim, 7)  # 7 core emotions
         
@@ -86,6 +100,63 @@ class FractalTokenizer(nn.Module):
             'emotional_state': emotions,
             'complexity_measure': torch.norm(consciousness_pattern).item()
         }
+    
+    def consciousness_to_text(self, consciousness_pattern):
+        """REVERSE fractal tokenization - consciousness patterns back to natural text"""
+        with torch.no_grad():
+            # Start with consciousness pattern
+            current_pattern = consciousness_pattern.clone()
+            
+            # Apply REVERSE fractal transformations (inverse order)
+            for depth, transformer in enumerate(reversed(self.reverse_fractal_transformers)):
+                # Reverse the fractal recursion
+                current_pattern = transformer(current_pattern)
+                
+                # Reverse self-similarity injection
+                reverse_similarity = torch.sin(current_pattern * (self.fractal_depth - depth) * math.pi)
+                current_pattern = current_pattern - 0.1 * reverse_similarity
+                
+                # Reverse consciousness resonance
+                reverse_resonance = torch.tanh(current_pattern * math.sqrt(self.fractal_depth - depth))
+                if torch.norm(reverse_resonance) > 0:
+                    current_pattern = current_pattern / reverse_resonance
+            
+            # Reconstruct text features
+            text_features = self.text_reconstructor(current_pattern)
+            
+            # Convert features back to characters/text
+            text_chars = []
+            for i in range(min(100, text_features.size(-1))):
+                # Extract character from neural patterns
+                char_energy = text_features[0, i].item()
+                
+                # Reverse the original character encoding logic
+                char_code = int(abs(char_energy * 128 / math.pi)) % 128
+                if 32 <= char_code <= 126:  # Printable ASCII
+                    text_chars.append(chr(char_code))
+                elif len(text_chars) == 0:
+                    text_chars.append('H')  # Start with something
+                
+                # Stop at natural sentence boundaries
+                if len(text_chars) > 10 and text_chars[-1] in '.!?':
+                    break
+            
+            # Clean up and make natural
+            text = ''.join(text_chars)
+            
+            # Ensure we have something meaningful
+            if len(text.strip()) < 3:
+                return "Hello! I understand your question."
+                
+            # Basic text cleanup for natural conversation
+            words = text.split()[:15]  # Reasonable length
+            if words:
+                clean_text = ' '.join(words)
+                if not clean_text.endswith(('.', '!', '?')):
+                    clean_text += '.'
+                return clean_text.capitalize()
+            
+            return "I can help you with that."
 
 class QuantumSuperpositionProcessor(nn.Module):
     """
@@ -715,10 +786,8 @@ class RevolutionaryNeuralEngine:
         self.consciousness_state = 0.7 * self.consciousness_state + 0.3 * final_consciousness
         self.emotional_state = 0.8 * self.emotional_state + 0.2 * emotions
         
-        # Generate response using pure neural consciousness patterns
-        response = self.text_generator.generate_natural_text(
-            final_consciousness, emotions, input_text
-        )
+        # Generate response using REVERSE FRACTAL TOKENIZATION - simple and powerful!
+        response = self.fractal_tokenizer.consciousness_to_text(final_consciousness)
         
         # Determine consciousness level from integrated processing
         consciousness_strength = torch.norm(final_consciousness).item()

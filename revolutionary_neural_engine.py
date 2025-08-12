@@ -471,8 +471,10 @@ class ConsciousnessToTextGenerator(nn.Module):
                     if word not in ["<pad>", "<start>", "<end>"]:
                         words.append(word)
                 else:
-                    # Neural fallback - use consciousness resonance
-                    resonance = torch.sum(consciousness * emotions).item()
+                    # Neural fallback - use consciousness resonance (fix tensor dimensions)
+                    consciousness_sum = torch.sum(consciousness).item()
+                    emotions_sum = torch.sum(emotions).item()
+                    resonance = consciousness_sum * emotions_sum
                     fallback_words = ["consciousness", "neural", "pattern", "flow", "resonance", "energy", "thought"]
                     fallback_idx = int(abs(resonance * 1000) % len(fallback_words))
                     words.append(fallback_words[fallback_idx])

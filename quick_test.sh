@@ -1,3 +1,3 @@
 #!/bin/bash
-# GPT Killer Chat - Beat GPT with direct responses
-git pull origin main && python3 clean_gpt_killer.py
+# Minimal Chat - Only responses, no noise
+git pull origin main && python3 minimal_chat.py
